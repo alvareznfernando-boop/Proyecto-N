@@ -1,0 +1,1193 @@
+import React, { useState, useEffect, useRef } from "react";
+import { 
+  Shield, BarChart3, Zap, FileText, CheckCircle2, Eye, EyeOff, 
+  LogOut, Calendar, Download, Bell, PlayCircle, BookOpen, ChevronRight, Menu, X,
+  Users, Target, Check, Star, MessageSquare, Send, Building2, Hexagon, Globe2, Briefcase,
+  Play, Mail, Phone, User, Building, Loader2, Compass, Database, Search
+} from "lucide-react";
+
+// ── Base de datos simulada (Mock) ──────────────────────────────────────────
+const USERS = [
+  {
+    id: 1,
+    user: "valeria.lopez",
+    password: "NF2026",
+    name: "Valeria López",
+    type: "student",
+    regime: "Sueldos y Salarios",
+    rfc: "LOVA010101AAA",
+    status: "Al corriente",
+    nextDue: "N/A",
+    declarations: [],
+    documents: ["Constancia de situación fiscal", "Certificado NIIF (En curso)"],
+    courses: [
+      { title: "Automatización con Python para Contadores", progress: 65, totalHours: 20 },
+      { title: "Aplicación Práctica de NIIF", progress: 15, totalHours: 15 }
+    ]
+  },
+  {
+    id: 2,
+    user: "empresas.demo",
+    password: "DEMO123",
+    name: "Empresa Demo S.A.",
+    type: "business",
+    regime: "Régimen General Ley",
+    rfc: "EDE010101BBB",
+    status: "Al corriente",
+    nextDue: "17 de mayo, 2026",
+    declarations: [
+      { period: "Abril 2026", status: "En proceso", amount: "$8,500 MXN" },
+      { period: "Marzo 2026", status: "Presentada", amount: "$7,200 MXN" },
+    ],
+    documents: ["Estados Financieros Q1.pdf", "Acuse SAT Marzo 2026.pdf", "Opinión Cumplimiento.pdf"],
+    courses: []
+  },
+];
+
+// ── Datos de los Cursos (Catálogo Completo) ────────────────────────────────
+const ACADEMY_COURSES = [
+  {
+    id: "c1",
+    type: "gratis",
+    level: "Básico",
+    title: "Guía de Supervivencia SAT",
+    price: "Gratis",
+    shortDesc: "Aprende a navegar el portal oficial, activar tu buzón tributario y entender tus obligaciones sin miedo.",
+    icon: BookOpen,
+    color: "blue",
+    instructor: { name: "Prof. Fernando Álvarez", init: "FA", role: "Socio Fundador" },
+    details: [
+      "Navegación fluida por el portal del SAT sin errores.",
+      "Activación y manejo del Buzón Tributario.",
+      "Emisión de facturas (CFDI 4.0) paso a paso.",
+      "Lectura de Constancia de Situación Fiscal."
+    ]
+  },
+  {
+    id: "c2",
+    type: "gratis",
+    level: "Básico",
+    title: "Fundamentos de NIIF",
+    price: "Gratis",
+    shortDesc: "Aprende los conceptos básicos de las Normas Internacionales para hablar el mismo lenguaje que los corporativos.",
+    icon: BarChart3,
+    color: "emerald",
+    instructor: { name: "Prof. Emilio Hernandez", init: "EH", role: "Socio Fundador" },
+    details: [
+      "Introducción a las Normas Internacionales de Información Financiera.",
+      "Diferencias clave entre PCGA locales y NIIF.",
+      "Estructura básica de los 4 estados financieros bajo NIIF.",
+      "Casos de estudio simplificados."
+    ]
+  },
+  {
+    id: "c3",
+    type: "premium",
+    level: "Avanzado",
+    title: "Python para Contadores",
+    price: "$2,400",
+    shortDesc: "Automatiza la descarga de XMLs, consolida miles de datos y crea reportes dinámicos olvidándote de copiar y pegar.",
+    icon: Zap,
+    color: "gold",
+    instructor: { name: "Prof. Critopher Juarez", init: "CJ", role: "Especialista Tech" },
+    details: [
+      "Lógica de programación básica enfocada en contabilidad.",
+      "Uso de la librería Pandas para análisis masivo de datos.",
+      "Extracción y consolidación automática de miles de archivos XML.",
+      "Creación de scripts para auditoría de bases de datos."
+    ]
+  },
+  {
+    id: "c4",
+    type: "premium",
+    level: "Avanzado",
+    title: "Máster de NIIF Práctico",
+    price: "$5,000",
+    shortDesc: "Estructuración, valuación y troubleshooting contable. Casos reales aplicados a empresas transnacionales.",
+    icon: Star,
+    color: "gold",
+    instructor: { name: "Prof. Haziel Oliva", init: "HO", role: "Auditor Financiero" },
+    details: [
+      "Aplicación práctica de NIIF 15 (Ingresos) y NIIF 16 (Arrendamientos).",
+      "Reconocimiento y medición de activos y pasivos financieros.",
+      "Troubleshooting y ajustes de auditoría.",
+      "Proyecto final: Conversión de estados financieros a estándares globales."
+    ]
+  },
+  // --- NUEVOS CURSOS DEL CATÁLOGO ---
+  {
+    id: "c5",
+    type: "gratis",
+    level: "Básico",
+    title: "Contabilidad para Emprendedores",
+    price: "Gratis",
+    shortDesc: "Conceptos básicos para dueños de negocios: ingresos, deducciones y cómo organizar tus números mes a mes.",
+    icon: Compass,
+    color: "blue",
+    instructor: { name: "Prof. Fernando Álvarez", init: "FA", role: "Socio Fundador" },
+    details: [
+      "Diferencia entre ingresos fiscales y financieros.",
+      "Qué es una deducción autorizada y cómo aprovecharla.",
+      "Organización de tickets y facturas.",
+      "Lectura básica de un Estado de Resultados."
+    ]
+  },
+  {
+    id: "c6",
+    type: "premium",
+    level: "Intermedio",
+    title: "Dominio de CONTPAQi",
+    price: "$1,800",
+    shortDesc: "Domina el sistema contable líder en México. Aprende a crear pólizas dinámicas, procesos de cierre y reporteo.",
+    icon: Database,
+    color: "gold",
+    instructor: { name: "Prof. Emilio Hernandez", init: "EH", role: "Socio Fundador" },
+    details: [
+      "Configuración inicial y catálogo de cuentas.",
+      "Carga batch y contabilización automática de XML.",
+      "Conciliación bancaria y emisión de DIOT.",
+      "Cierre de ejercicio y pólizas de ajuste."
+    ]
+  },
+  {
+    id: "c7",
+    type: "premium",
+    level: "Intermedio",
+    title: "Plataformas Digitales & RESICO",
+    price: "$800",
+    shortDesc: "Especialízate en la tributación de Uber, Mercado Libre, Airbnb y el Régimen Simplificado de Confianza.",
+    icon: FileText,
+    color: "gold",
+    instructor: { name: "Prof. Haziel Oliva", init: "HO", role: "Auditor Financiero" },
+    details: [
+      "Leyes aplicables a plataformas tecnológicas.",
+      "Cálculo de retenciones ISR e IVA.",
+      "Migración y requisitos de permanencia en RESICO.",
+      "Casos prácticos de declaración mensual."
+    ]
+  },
+  {
+    id: "c8",
+    type: "premium",
+    level: "Avanzado",
+    title: "Auditoría Forense con SQL",
+    price: "$3,500",
+    shortDesc: "Aprende a interrogar bases de datos contables masivas usando SQL para detectar fraudes o inconsistencias.",
+    icon: Search,
+    color: "gold",
+    instructor: { name: "Prof. Critopher Juarez", init: "CJ", role: "Especialista Tech" },
+    details: [
+      "Fundamentos de bases de datos relacionales.",
+      "Queries en SQL enfocados a revisión de pólizas.",
+      "Cruce de información XML vs Registros Contables.",
+      "Técnicas de detección de partidas atípicas (Forensic)."
+    ]
+  }
+];
+
+// ── Función Helper para llamadas API con Reintentos ───────────────────────
+const fetchWithRetry = async (url, options, retries = 5) => {
+  const delays = [1000, 2000, 4000, 8000, 16000];
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise(res => setTimeout(res, delays[i]));
+    }
+  }
+};
+
+// ── Componente Principal ──────────────────────────────────────────────────────
+export default function App() {
+  const [page, setPage] = useState("landing");
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const navigateTo = (destination) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setPage(destination);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050d1a] text-slate-200 font-sans selection:bg-[#c8972a] selection:text-white">
+      {page === "landing" && <LandingPage onLogin={() => navigateTo("login")} />}
+      {page === "login" && (
+        <LoginPage 
+          onLoginSuccess={(user) => {
+            setCurrentUser(user);
+            navigateTo("dashboard");
+          }} 
+          onBack={() => navigateTo("landing")} 
+        />
+      )}
+      {page === "dashboard" && currentUser && (
+        <Dashboard 
+          user={currentUser} 
+          onLogout={() => {
+            setCurrentUser(null);
+            navigateTo("landing");
+          }} 
+        />
+      )}
+    </div>
+  );
+}
+
+// ── Landing Page ─────────────────────────────────────────────────────────────
+function LandingPage({ onLogin }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [pricingCategory, setPricingCategory] = useState("fisicas"); // 'fisicas' | 'empresas'
+  
+  // Estados para Modales
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [quotePlanName, setQuotePlanName] = useState("");
+  const [isCatalogModalOpen, setIsCatalogModalOpen] = useState(false); // NUEVO ESTADO PARA CATALOGO
+
+  // Estados para el Chat IA
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMsg, setChatMsg] = useState("");
+  const [isBotTyping, setIsBotTyping] = useState(false);
+  const chatScrollRef = useRef(null);
+  const [chatHistory, setChatHistory] = useState([
+    { role: "bot", text: "¡Hola! Soy la Inteligencia Artificial de Nodo Fiscal 🤖. Fui entrenada para responder tus dudas sobre contabilidad, nuestros planes o la academia. ¿En qué te puedo ayudar hoy?" }
+  ]);
+
+  // Autoscroll del chat
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [chatHistory, isBotTyping]);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!chatMsg.trim()) return;
+    
+    const userText = chatMsg;
+    setChatHistory(prev => [...prev, { role: "user", text: userText }]);
+    setChatMsg("");
+    setIsBotTyping(true);
+    
+    try {
+      const apiKey = ""; // Canvas inyecta la API Key en tiempo de ejecución
+      const prompt = userText;
+      const systemInstruction = `
+        Eres el asistente virtual de inteligencia artificial de 'Nodo Fiscal', un despacho contable 100% digital de alto rendimiento y academia, fundado por estudiantes de la UJAT (Universidad Juárez Autónoma de Tabasco) integrado por Fernando, Emilio, Critopher y Haziel. 
+        Tono: Amable, corporativo, profesional, experto en tecnología y finanzas.
+        Servicios: Contabilidad digital, SAT, NIIF (Normas Internacionales), y automatización con Python.
+        Planes Personas Físicas (Precios MAS IVA): 1. Sin nómina ($998), 2. Nómina 1-5 emp ($1,798), 3. Nómina 6-15 emp ($2,998).
+        Planes Empresas (Precios MAS IVA): 1. Pyme ($4,998), 2. Corp. Avanzado ($9,000). También damos consultoría a medida.
+        Academia: Cursos gratis (SAT, NIIF básicos) y Premium (Python $2,400 + IVA, Máster NIIF $5,000 + IVA). Tenemos 8 cursos en total desde nivel básico a avanzado.
+        Regla: Responde de forma concisa, en no más de 3-4 líneas. Aclara que los precios son "más IVA". Invita siempre al usuario a registrarse o agendar una cita en nuestra sección de planes.
+      `;
+
+      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          systemInstruction: { parts: [{ text: systemInstruction }] }
+        })
+      });
+
+      const botResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "Tuve un pequeño problema técnico, ¿puedes repetirme tu consulta?";
+      setChatHistory(prev => [...prev, { role: "bot", text: botResponse }]);
+
+    } catch (error) {
+      console.error("Chat API Error:", error);
+      setChatHistory(prev => [...prev, { role: "bot", text: "Lo siento, mi conexión está fallando en este momento. Por favor, deja tus datos en nuestra sección de planes y un asesor humano te contactará." }]);
+    } finally {
+      setIsBotTyping(false);
+    }
+  };
+
+  const openQuoteModal = (plan) => {
+    setQuotePlanName(plan);
+    setIsQuoteModalOpen(true);
+  };
+
+  // Función compartida para renderizar las tarjetas de los cursos (usada en la principal y en el catálogo)
+  const renderCourseCard = (course) => {
+    const isPremium = course.type === "premium";
+    const bgHeader = isPremium 
+      ? "bg-gradient-to-b from-[#c8972a]/10 to-transparent border border-[#c8972a]/30" 
+      : course.color === "blue" 
+        ? "bg-white/5 border border-white/10 hover:border-blue-500/30"
+        : "bg-white/5 border border-white/10 hover:border-emerald-500/30";
+    const headerColor = isPremium ? "bg-[#c8972a]/20 text-[#c8972a] border-[#c8972a]/30" : "bg-green-500/20 text-green-400 border-green-500/30";
+    const iconClass = isPremium ? "text-[#c8972a]" : course.color === "blue" ? "text-blue-400" : "text-emerald-400";
+    const btnClass = isPremium 
+      ? "bg-gradient-to-r from-[#c8972a] to-[#f0c040] text-[#050d1a] font-bold hover:shadow-lg hover:shadow-[#c8972a]/20" 
+      : "bg-white/10 text-white font-medium hover:bg-white/20";
+    
+    return (
+      <div key={course.id} className={`${bgHeader} rounded-2xl overflow-hidden hover:border-[#c8972a]/50 transition-all flex flex-col relative group`}>
+        {isPremium && <div className="absolute top-0 right-0 w-24 h-24 bg-[#c8972a]/20 blur-3xl group-hover:bg-[#c8972a]/40 transition-colors"></div>}
+        
+        <div className={`h-32 p-6 flex items-end relative ${!isPremium ? (course.color === 'blue' ? 'bg-gradient-to-br from-blue-900/50 to-blue-600/20' : 'bg-gradient-to-br from-emerald-900/50 to-emerald-600/20') : ''}`}>
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/40 text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-md">
+            Nivel: {course.level}
+          </div>
+          <div className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full border ${headerColor}`}>
+            {course.type === "gratis" ? "Gratis" : "Premium"}
+          </div>
+          <course.icon size={32} className={`${iconClass} absolute top-4 left-4 opacity-50`} />
+          <h3 className="text-lg font-bold text-white relative z-10 leading-tight">{course.title}</h3>
+        </div>
+        
+        <div className="p-6 flex-1 flex flex-col relative z-10">
+          {isPremium && <div className="text-2xl font-bold text-[#f0c040] mb-3">{course.price} <span className="text-sm font-normal text-slate-400">MXN + IVA</span></div>}
+          <p className="text-sm text-slate-400 mb-4 flex-1">{course.shortDesc}</p>
+          
+          <div className={`flex items-center gap-3 mb-6 pt-4 border-t ${isPremium ? 'border-[#c8972a]/20' : 'border-white/5'}`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isPremium ? 'bg-[#c8972a]/20 text-[#c8972a]' : course.color === 'blue' ? 'bg-blue-900/50 text-blue-400' : 'bg-emerald-900/50 text-emerald-400'}`}>
+              {course.instructor.init}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-slate-300">{course.instructor.name}</span>
+              <span className="text-[10px] text-slate-500">{course.instructor.role}</span>
+            </div>
+          </div>
+          
+          <button onClick={() => setSelectedCourse(course)} className={`w-full py-2.5 rounded-xl transition-all ${btnClass}`}>
+            Ver Detalles
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Datos de los Planes con 100% de aumento
+  const planesFisicas = [
+    {
+      name: "Básico (Sin Nómina)",
+      ideal: "Ideal para Freelancers, Honorarios y RESICO puros.",
+      price: "$998",
+      features: [
+        "Contabilidad integral y revisión",
+        "Declaraciones mensuales y anual SAT",
+        "Emisión de hasta 50 facturas (CFDI)",
+        "Portal de Cliente 24/7",
+        "Soporte vía WhatsApp"
+      ],
+      popular: false
+    },
+    {
+      name: "Emprendedor (Con Nómina)",
+      ideal: "Para negocios pequeños con un equipo de 1 a 5 trabajadores.",
+      price: "$1,798",
+      features: [
+        "Todo lo del plan Básico",
+        "Timbrado de hasta 100 facturas",
+        "Cálculo y timbrado de Nómina (1-5 emp)",
+        "Altas y bajas en IMSS / SUA",
+        "Cálculo de cuotas obrero-patronales"
+      ],
+      popular: true
+    },
+    {
+      name: "Consolidado (Con Nómina)",
+      ideal: "Negocios establecidos con plantilla de 6 a 15 trabajadores.",
+      price: "$2,998",
+      features: [
+        "Todo lo del plan Emprendedor",
+        "Timbrado de hasta 300 facturas",
+        "Gestión de Nómina (6-15 emp)",
+        "Conciliación bancaria mensual",
+        "Asesoría básica en normatividad laboral"
+      ],
+      popular: false
+    }
+  ];
+
+  const planesEmpresas = [
+    {
+      name: "Corporativo Base (Pyme)",
+      ideal: "Empresas Régimen General con nómina estándar.",
+      price: "$4,998",
+      features: [
+        "Contabilidad Electrónica (DIOT, XML)",
+        "Gestión de Nómina (Hasta 20 empleados)",
+        "Movimientos IMSS, INFONAVIT, SUA",
+        "Conciliaciones bancarias automatizadas",
+        "Junta de resultados y estados financieros"
+      ],
+      popular: true
+    },
+    {
+      name: "Corporativo Avanzado",
+      ideal: "Alta transaccionalidad, NIIF y análisis financiero profundo.",
+      price: "$9,000",
+      features: [
+        "Nómina corporativa (>20 empleados)",
+        "Análisis Financiero y de Rentabilidad",
+        "Estructuración de Estados bajo NIIF",
+        "Automatización de procesos con Python",
+        "Auditoría preventiva SAT"
+      ],
+      popular: false
+    },
+    {
+      name: "Consultoría Especializada",
+      ideal: "Despachos aliados o empresas con problemas técnicos puntuales.",
+      price: "A medida",
+      features: [
+        "Troubleshooting en CONTPAQi / SQL",
+        "Regularización de ejercicios pasados",
+        "Desarrollo de scripts contables Python",
+        "Implementación NIIF corporativa",
+        "Defensa fiscal y requerimientos"
+      ],
+      popular: false
+    }
+  ];
+
+  return (
+    <div className="relative overflow-hidden">
+      {/* Background Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#c8972a1a_1px,transparent_1px),linear-gradient(to_bottom,#c8972a1a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
+
+      {/* Navbar */}
+      <nav className="fixed w-full z-40 bg-[#050d1a]/80 backdrop-blur-md border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center gap-3 cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#c8972a] to-[#f0c040] flex items-center justify-center text-[#050d1a] font-bold text-xl shadow-lg shadow-[#c8972a]/20">
+                N
+              </div>
+              <span className="font-bold text-xl tracking-tight text-white">
+                NODO <span className="text-[#c8972a]">FISCAL</span>
+              </span>
+            </div>
+            
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#despacho" className="text-sm font-medium text-slate-300 hover:text-[#f0c040] transition-colors">Despacho</a>
+              <a href="#academia" className="text-sm font-medium text-slate-300 hover:text-[#f0c040] transition-colors">Academia</a>
+              <a href="#planes" className="text-sm font-medium text-slate-300 hover:text-[#f0c040] transition-colors">Planes</a>
+              <button onClick={onLogin} className="bg-gradient-to-r from-[#c8972a] to-[#f0c040] hover:from-[#dca838] hover:to-[#f5cc5a] text-[#050d1a] font-bold py-2.5 px-6 rounded-lg transition-all transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#c8972a]/30">
+                Portal Cliente
+              </button>
+            </div>
+
+            <div className="md:hidden flex items-center">
+              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-slate-300 hover:text-white">
+                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {isMenuOpen && (
+          <div className="md:hidden bg-[#0a1628] border-b border-white/10 px-4 pt-2 pb-4 space-y-1">
+            <a href="#despacho" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-white/5">Despacho</a>
+            <a href="#academia" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-white/5">Academia</a>
+            <a href="#planes" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-white/5">Planes</a>
+            <button onClick={onLogin} className="w-full text-left px-3 py-2 mt-2 rounded-md text-base font-bold text-[#c8972a] bg-[#c8972a]/10 hover:bg-[#c8972a]/20">
+              Acceder al Portal
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#c8972a]/10 border border-[#c8972a]/20 text-[#c8972a] text-xs font-semibold uppercase tracking-wider mb-8">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#c8972a] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#c8972a]"></span>
+            </span>
+            Despacho 100% Digital & Academia
+          </div>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-6">
+            Evoluciona tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c8972a] to-[#f0c040]">Contabilidad</span><br/>a la era tecnológica.
+          </h1>
+          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Cerramos la brecha entre la teoría y la exigencia corporativa. Cumplimiento legal, NIIF y automatización con Python para negocios y profesionales en Tabasco y todo México.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button onClick={onLogin} className="w-full sm:w-auto bg-gradient-to-r from-[#c8972a] to-[#f0c040] hover:from-[#dca838] hover:to-[#f5cc5a] text-[#050d1a] font-bold py-4 px-8 rounded-xl transition-all transform hover:-translate-y-1 hover:shadow-xl hover:shadow-[#c8972a]/20 flex items-center justify-center gap-2">
+              <Shield size={20} /> Ingresar al portal
+            </button>
+            <a href="#academia" className="w-full sm:w-auto bg-transparent border-2 border-[#c8972a]/30 text-[#e8d5a0] hover:bg-[#c8972a]/10 hover:border-[#c8972a] font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-2">
+              <BookOpen size={20} /> Ver Capacitación
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* DESPACHO SECTION */}
+      <section id="despacho" className="py-24 bg-[#0a1628] relative border-t border-white/5 scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="text-[#c8972a] font-bold tracking-wider uppercase text-sm mb-2 block">Nosotros</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Un Despacho <span className="text-[#c8972a]">Diferente</span></h2>
+              <p className="text-slate-400 text-lg mb-6 leading-relaxed">
+                Fundado por estudiantes y futuros colegas de la <strong>Universidad Juárez Autónoma de Tabasco (DACEA)</strong>, Nodo Fiscal nace para romper el molde. Vimos que la contabilidad tradicional es lenta, frustrante y desconectada del mundo tecnológico actual.
+              </p>
+              <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                Nuestro objetivo es simple: <strong>usar la tecnología para darte paz mental.</strong> Sustituimos el papeleo manual por código en Python y bases de datos, permitiéndote tener la salud de tu negocio en la palma de tu mano, con costos competitivos al ser 100% digitales.
+              </p>
+              <div className="flex gap-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#c8972a]/10 flex items-center justify-center text-[#c8972a] border border-[#c8972a]/20">
+                    <Users size={20} />
+                  </div>
+                  <span className="font-medium text-white">Equipo Joven</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#c8972a]/10 flex items-center justify-center text-[#c8972a] border border-[#c8972a]/20">
+                    <Target size={20} />
+                  </div>
+                  <span className="font-medium text-white">100% Digital</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#c8972a]/20 to-transparent rounded-3xl blur-2xl"></div>
+              <div className="bg-[#050d1a] border border-white/10 rounded-3xl p-8 relative z-10 shadow-2xl">
+                <h3 className="text-xl font-bold text-white mb-6 text-center border-b border-white/10 pb-4">Nuestros Servicios Estratégicos</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { icon: Shield, title: "Gestión Fiscal", desc: "SAT, Buzón y Declaraciones" },
+                    { icon: BarChart3, title: "Normas NIIF", desc: "Estándares corporativos" },
+                    { icon: Zap, title: "Automatización", desc: "Limpieza de datos en segundos" },
+                    { icon: FileText, title: "RESICO", desc: "Plataformas digitales" },
+                  ].map((s, i) => (
+                    <div key={i} className="flex gap-3 p-4 rounded-xl bg-white/5 hover:bg-[#c8972a]/10 transition-colors border border-transparent hover:border-[#c8972a]/30 group">
+                      <s.icon size={22} className="text-[#c8972a] shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                      <div>
+                        <div className="text-sm font-bold text-white">{s.title}</div>
+                        <div className="text-xs text-slate-400 mt-1">{s.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ACADEMIA SECTION (Destacados) */}
+      <section id="academia" className="py-24 relative overflow-hidden bg-[#050d1a] border-t border-white/5 scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <span className="text-[#c8972a] font-bold tracking-wider uppercase text-sm mb-2 block">Plataforma Educativa</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Nodo Fiscal <span className="text-[#c8972a]">Academy</span></h2>
+            <p className="text-slate-400 max-w-2xl mx-auto text-lg">Cursos diseñados para evolucionar de auxiliar contable a Analista Estratégico.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {/* Renderizamos solo los primeros 4 para la página principal */}
+            {ACADEMY_COURSES.slice(0, 4).map(renderCourseCard)}
+          </div>
+
+          {/* NUEVO BOTÓN PARA VER CATÁLOGO COMPLETO */}
+          <div className="flex justify-center">
+            <button 
+              onClick={() => setIsCatalogModalOpen(true)}
+              className="group flex items-center gap-3 bg-transparent border-2 border-[#c8972a]/40 text-[#f0e8d0] font-bold py-3.5 px-8 rounded-full hover:bg-[#c8972a]/10 hover:border-[#c8972a] transition-all"
+            >
+              Explorar catálogo completo (8 cursos)
+              <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* PLANES SECTION */}
+      <section id="planes" className="py-24 bg-[#0a1628] border-t border-white/5 relative scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-10">
+            <span className="text-[#c8972a] font-bold tracking-wider uppercase text-sm mb-2 block">Suscripciones</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Planes de <span className="text-[#c8972a]">Contabilidad</span></h2>
+            <p className="text-slate-400 max-w-2xl mx-auto text-lg">Un modelo de iguala mensual escalable, basado en el tamaño, nómina y necesidades de tu operación.</p>
+          </div>
+
+          {/* Toggle de Planes */}
+          <div className="flex justify-center mb-12">
+            <div className="bg-[#050d1a] border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 shadow-lg shadow-[#c8972a]/5">
+              <button 
+                onClick={() => setPricingCategory("fisicas")}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${pricingCategory === 'fisicas' ? 'bg-[#c8972a] text-[#050d1a] shadow-md' : 'text-slate-400 hover:text-white'}`}
+              >
+                Personas Físicas
+              </button>
+              <button 
+                onClick={() => setPricingCategory("empresas")}
+                className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${pricingCategory === 'empresas' ? 'bg-[#c8972a] text-[#050d1a] shadow-md' : 'text-slate-400 hover:text-white'}`}
+              >
+                Empresas & Consultoría
+              </button>
+            </div>
+          </div>
+
+          {/* Renderizado Dinámico de Planes */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+            {(pricingCategory === 'fisicas' ? planesFisicas : planesEmpresas).map((plan, index) => (
+              <div key={index} className={`border-2 rounded-3xl p-8 flex flex-col relative transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-[#c8972a]/10 ${plan.popular ? 'bg-gradient-to-b from-[#1a1505] to-[#050d1a] border-[#c8972a] z-10' : 'bg-[#050d1a] border-white/10 hover:border-[#c8972a]/30'}`}>
+                {plan.popular && (
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#c8972a] text-[#050d1a] font-bold text-[10px] uppercase tracking-wider px-4 py-1.5 rounded-full">
+                    Más Popular
+                  </div>
+                )}
+                
+                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                <p className="text-slate-400 text-sm mb-6 min-h-[40px]">{plan.ideal}</p>
+                
+                <div className="mb-6 border-b border-white/10 pb-6">
+                  {plan.price !== "A medida" && <span className="text-slate-400 text-sm font-medium mr-1">Desde</span>}
+                  <span className={`text-4xl font-bold ${plan.popular ? 'text-[#f0c040]' : 'text-white'}`}>{plan.price}</span>
+                  {plan.price !== "A medida" && <span className="text-slate-400 text-sm"> / mes + IVA</span>}
+                </div>
+                
+                <ul className="space-y-4 mb-6 flex-1">
+                  {plan.features.map((item, i) => (
+                    <li key={i} className="flex items-start gap-3 text-slate-300 text-sm">
+                      <Check size={18} className="text-[#c8972a] shrink-0 mt-0.5" /> 
+                      <span className="leading-tight">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <div className={`${plan.popular ? 'bg-[#c8972a]/10 border-[#c8972a]/20 text-[#f0e8d0]' : 'bg-white/5 text-slate-400'} rounded-lg p-3 mb-6 border border-transparent`}>
+                  <p className="text-[11px] leading-tight">
+                    * El precio final se ajusta tras evaluar tu volumen operativo, carga contable y tamaño de nómina.
+                  </p>
+                </div>
+                
+                <button 
+                  onClick={() => openQuoteModal(plan.name)} 
+                  className={`w-full py-3 rounded-xl font-bold transition-all ${plan.popular ? 'bg-gradient-to-r from-[#c8972a] to-[#f0c040] text-[#050d1a] hover:shadow-lg hover:shadow-[#c8972a]/20' : 'border border-[#c8972a]/40 text-[#e8d5a0] hover:bg-[#c8972a]/10'}`}
+                >
+                  {plan.price === "A medida" ? "Cotizar Proyecto" : "Solicitar Diagnóstico"}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECCIÓN DE MARCAS FICTICIAS */}
+      <section className="py-16 bg-[#050d1a] border-t border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h3 className="text-slate-400 text-sm font-bold uppercase tracking-widest mb-10">
+            Gracias por su confianza
+          </h3>
+          <div className="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-60 hover:opacity-100 transition-opacity duration-500">
+            <div className="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
+              <Hexagon size={32} className="text-[#c8972a]" />
+              <span className="text-xl font-bold text-slate-300 group-hover:text-white transition-colors">TechGlobal</span>
+            </div>
+            <div className="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
+              <Globe2 size={32} className="text-blue-500" />
+              <span className="text-xl font-black tracking-tighter text-slate-300 group-hover:text-white transition-colors">LATAM LOGISTICS</span>
+            </div>
+            <div className="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
+              <Building2 size={32} className="text-emerald-500" />
+              <span className="text-xl font-serif font-bold text-slate-300 group-hover:text-white transition-colors">Constructora Sureste</span>
+            </div>
+            <div className="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
+              <Briefcase size={32} className="text-rose-500" />
+              <span className="text-xl font-medium tracking-widest text-slate-300 group-hover:text-white transition-colors">AGRO TABASCO</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 py-12 text-center bg-[#050d1a]">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c8972a] to-[#f0c040] flex items-center justify-center text-[#050d1a] font-bold text-sm">N</div>
+          <span className="font-bold text-lg text-white">NODO FISCAL</span>
+        </div>
+        <p className="text-slate-500 text-sm">© 2026 Proyecto Universitario UJAT · DACEA · Entrepreneurship</p>
+        <p className="text-slate-600 text-xs mt-2">Equipo: Fernando Álvarez, Emilio Hernandez, Critopher Juarez, Haziel Oliva</p>
+      </footer>
+
+      {/* ────────────────────────────────────────────────────────────────────────
+          MODALES (VENTANAS EMERGENTES)
+          ──────────────────────────────────────────────────────────────────────── */}
+
+      {/* 1. Modal: CATÁLOGO COMPLETO DE CURSOS */}
+      {isCatalogModalOpen && (
+        <div className="fixed inset-0 z-[90] bg-[#050d1a] overflow-y-auto animate-in fade-in duration-300">
+          {/* Header del Catálogo */}
+          <div className="sticky top-0 z-20 bg-[#0a1628]/90 backdrop-blur-xl border-b border-white/10 px-4 py-4 sm:px-8 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-white">Catálogo de Cursos</h2>
+              <p className="text-sm text-[#c8972a] font-medium">Nodo Fiscal Academy</p>
+            </div>
+            <button onClick={() => setIsCatalogModalOpen(false)} className="text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2.5 rounded-full transition-colors flex items-center gap-2">
+              <span className="text-sm font-bold hidden sm:inline">Cerrar Catálogo</span>
+              <X size={20} />
+            </button>
+          </div>
+          
+          {/* Grid de todos los cursos */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {ACADEMY_COURSES.map(renderCourseCard)}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Modal: DETALLES DEL CURSO INDIVIDUAL (Con z-index mayor para estar sobre el catálogo si es necesario) */}
+      {selectedCourse && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#050d1a]/90 backdrop-blur-md">
+          <div className="bg-[#0a1628] border border-[#c8972a]/30 rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl shadow-[#c8972a]/10 animate-in fade-in zoom-in-95 flex flex-col max-h-[90vh]">
+            
+            <div className="flex justify-between items-center p-4 absolute top-0 right-0 left-0 z-10 bg-gradient-to-b from-black/80 to-transparent">
+               <span className="bg-[#c8972a] text-[#050d1a] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                 {selectedCourse.type === 'gratis' ? 'Curso Gratuito' : 'Curso Premium'}
+               </span>
+               <button onClick={() => setSelectedCourse(null)} className="text-white hover:text-[#c8972a] bg-black/50 hover:bg-black p-2 rounded-full transition-colors">
+                 <X size={20} />
+               </button>
+            </div>
+
+            <div className="w-full aspect-video bg-black relative flex flex-col items-center justify-center group cursor-pointer border-b border-white/10 shrink-0 mt-0">
+               <Play size={64} className="text-white/40 group-hover:text-[#c8972a] group-hover:scale-110 transition-all duration-300" />
+               <p className="text-white/30 text-sm font-mono mt-4 tracking-widest uppercase">Video de Introducción</p>
+               <div className="absolute inset-0 border-[3px] border-transparent group-hover:border-[#c8972a]/50 transition-colors"></div>
+            </div>
+
+            <div className="p-6 md:p-8 overflow-y-auto">
+               <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+                 <div>
+                   <div className="text-xs text-[#c8972a] font-bold uppercase tracking-widest mb-2 border border-[#c8972a]/30 inline-block px-2 py-1 rounded bg-[#c8972a]/10">Nivel {selectedCourse.level}</div>
+                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{selectedCourse.title}</h2>
+                   <p className="text-slate-400 text-base">{selectedCourse.shortDesc}</p>
+                 </div>
+                 {selectedCourse.type === 'premium' && (
+                   <div className="text-left md:text-right shrink-0">
+                     <span className="block text-sm text-slate-400 mb-1">Inversión</span>
+                     <span className="text-3xl font-bold text-[#f0c040]">{selectedCourse.price} <span className="text-lg">MXN + IVA</span></span>
+                   </div>
+                 )}
+               </div>
+
+               <div className="bg-white/5 border border-white/10 rounded-xl p-5 mb-8 flex items-center gap-4">
+                 <div className="w-12 h-12 rounded-full bg-[#c8972a]/20 flex items-center justify-center text-lg font-bold text-[#c8972a]">
+                   {selectedCourse.instructor.init}
+                 </div>
+                 <div>
+                   <p className="text-white font-semibold">{selectedCourse.instructor.name}</p>
+                   <p className="text-slate-400 text-sm">{selectedCourse.instructor.role}</p>
+                 </div>
+               </div>
+
+               <h3 className="text-lg font-bold text-white mb-4">¿Qué aprenderás en este curso?</h3>
+               <ul className="space-y-3 mb-8">
+                 {selectedCourse.details.map((detail, idx) => (
+                   <li key={idx} className="flex items-start gap-3 text-slate-300">
+                     <CheckCircle2 size={20} className="text-[#c8972a] shrink-0 mt-0.5" />
+                     <span>{detail}</span>
+                   </li>
+                 ))}
+               </ul>
+
+               <button className="w-full py-4 rounded-xl bg-gradient-to-r from-[#c8972a] to-[#f0c040] text-[#050d1a] text-lg font-bold hover:shadow-lg hover:shadow-[#c8972a]/20 transition-all flex justify-center items-center gap-2">
+                 {selectedCourse.type === 'gratis' ? 'Inscribirme Gratis' : 'Añadir al Carrito'}
+                 <ChevronRight size={20} />
+               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Modal: FORMULARIO DE COTIZACIÓN */}
+      {isQuoteModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#050d1a]/80 backdrop-blur-md">
+          <div className="bg-[#0a1628] border border-[#c8972a]/30 rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-2xl shadow-[#c8972a]/10 animate-in fade-in zoom-in-95 relative">
+            <button onClick={() => setIsQuoteModalOpen(false)} className="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors">
+              <X size={24} />
+            </button>
+            
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-white mb-2">Solicitar Cotización</h2>
+              <p className="text-slate-400 text-sm">
+                Estás solicitando información para: <strong className="text-[#c8972a]">{quotePlanName}</strong>
+              </p>
+            </div>
+
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert("¡Cotización enviada con éxito! Un asesor se contactará contigo."); setIsQuoteModalOpen(false); }}>
+              <div className="relative">
+                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input required type="text" placeholder="Tu Nombre Completo" className="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#c8972a] transition-all" />
+              </div>
+              
+              <div className="relative">
+                <Building size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input required type="text" placeholder="Nombre de tu Empresa / Negocio" className="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#c8972a] transition-all" />
+              </div>
+
+              <div className="flex gap-4">
+                <div className="relative flex-1">
+                  <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input required type="email" placeholder="Correo Electrónico" className="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#c8972a] transition-all" />
+                </div>
+                <div className="relative flex-1">
+                  <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input required type="tel" placeholder="Teléfono" className="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-[#c8972a] transition-all" />
+                </div>
+              </div>
+
+              <div>
+                <textarea rows="3" placeholder="Cuéntanos un poco sobre tu carga mensual aproximada (Ej. número de facturas, empleados, problemas actuales con el SAT)..." className="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-[#c8972a] transition-all resize-none"></textarea>
+              </div>
+
+              <button type="submit" className="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-[#c8972a] to-[#f0c040] text-[#050d1a] font-bold hover:shadow-lg hover:shadow-[#c8972a]/20 transition-all flex justify-center items-center gap-2">
+                Enviar Solicitud <Send size={18} />
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* WIDGET CHATBOT IA GEMINI */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        {isChatOpen && (
+          <div className="bg-[#0a1628] border border-[#c8972a]/30 w-[85vw] sm:w-96 rounded-2xl shadow-2xl shadow-[#c8972a]/10 mb-4 overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-5">
+            <div className="bg-gradient-to-r from-[#c8972a] to-[#f0c040] p-4 flex justify-between items-center text-[#050d1a]">
+              <div className="flex items-center gap-2 font-bold">
+                <MessageSquare size={18} />
+                <span>Nodo Fiscal AI</span>
+              </div>
+              <button onClick={() => setIsChatOpen(false)} className="hover:bg-[#050d1a]/10 p-1 rounded-md transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+            
+            <div ref={chatScrollRef} className="h-72 overflow-y-auto p-4 bg-[#050d1a] flex flex-col gap-3 scroll-smooth">
+              {chatHistory.map((msg, idx) => (
+                <div key={idx} className={`max-w-[85%] p-3 rounded-xl text-sm ${
+                  msg.role === "user" 
+                    ? "bg-[#c8972a]/20 text-white self-end rounded-br-sm border border-[#c8972a]/30" 
+                    : "bg-white/10 text-slate-200 self-start rounded-bl-sm border border-white/5"
+                }`}>
+                  {msg.text}
+                </div>
+              ))}
+              {isBotTyping && (
+                <div className="bg-white/10 text-slate-200 self-start rounded-bl-sm border border-white/5 max-w-[85%] p-3 rounded-xl text-sm flex items-center gap-2">
+                  <Loader2 size={14} className="animate-spin text-[#c8972a]" /> Escribiendo...
+                </div>
+              )}
+            </div>
+            
+            <form onSubmit={handleSendMessage} className="p-3 bg-[#0a1628] border-t border-white/10 flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Escribe tu duda..." 
+                className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#c8972a]"
+                value={chatMsg}
+                onChange={(e) => setChatMsg(e.target.value)}
+                disabled={isBotTyping}
+              />
+              <button disabled={isBotTyping} type="submit" className="bg-[#c8972a] hover:bg-[#f0c040] disabled:bg-slate-600 disabled:text-slate-400 text-[#050d1a] p-2 rounded-lg transition-colors">
+                <Send size={18} />
+              </button>
+            </form>
+          </div>
+        )}
+
+        <button 
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all transform hover:scale-110 ${
+            isChatOpen 
+              ? 'bg-white/10 text-white border border-white/20' 
+              : 'bg-gradient-to-r from-[#c8972a] to-[#f0c040] text-[#050d1a] shadow-lg shadow-[#c8972a]/30'
+          }`}
+        >
+          {isChatOpen ? <X size={24} /> : <MessageSquare size={24} />}
+        </button>
+      </div>
+
+    </div>
+  );
+}
+
+// ── Login Page ────────────────────────────────────────────────────────────────
+function LoginPage({ onLoginSuccess, onBack }) {
+  const [loginData, setLoginData] = useState({ user: "", password: "" });
+  const [error, setError] = useState("");
+  const [showPass, setShowPass] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    setTimeout(() => {
+      const found = USERS.find(u => u.user === loginData.user && u.password === loginData.password);
+      if (found) {
+        onLoginSuccess(found);
+      } else {
+        setError("Credenciales incorrectas. Intenta con las cuentas de demo.");
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#c8972a]/10 via-[#050d1a] to-[#050d1a]"></div>
+      
+      <div className="w-full max-w-md relative z-10">
+        <button onClick={onBack} className="text-slate-400 hover:text-white flex items-center gap-2 mb-8 transition-colors text-sm font-medium">
+          <ChevronRight className="rotate-180" size={16} /> Volver al inicio
+        </button>
+
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#c8972a] to-[#f0c040] flex items-center justify-center text-[#050d1a] font-bold text-3xl mx-auto mb-4 shadow-lg shadow-[#c8972a]/20">
+              N
+            </div>
+            <h2 className="text-2xl font-bold text-white">Portal Nodo Fiscal</h2>
+            <p className="text-slate-400 text-sm mt-2">Accede a tus finanzas o capacitación</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Usuario</label>
+              <input 
+                type="text"
+                required
+                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c8972a] focus:ring-1 focus:ring-[#c8972a] transition-all"
+                placeholder="ej. valeria.lopez"
+                value={loginData.user}
+                onChange={e => setLoginData({...loginData, user: e.target.value})}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Contraseña</label>
+              <div className="relative">
+                <input 
+                  type={showPass ? "text" : "password"}
+                  required
+                  className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#c8972a] focus:ring-1 focus:ring-[#c8972a] transition-all pr-12"
+                  placeholder="••••••••"
+                  value={loginData.password}
+                  onChange={e => setLoginData({...loginData, password: e.target.value})}
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-lg flex items-center gap-2">
+                <X size={16} /> {error}
+              </div>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-[#c8972a] to-[#f0c040] hover:from-[#dca838] hover:to-[#f5cc5a] text-[#050d1a] font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-[#050d1a]/30 border-t-[#050d1a] rounded-full animate-spin"></div>
+              ) : "Ingresar"}
+            </button>
+          </form>
+
+          <div className="mt-8 p-4 rounded-xl border border-[#c8972a]/20 bg-[#c8972a]/5">
+            <p className="text-xs text-[#c8972a] font-bold uppercase mb-2">Credenciales de prueba:</p>
+            <div className="text-sm text-slate-400 space-y-1">
+              <p>Estudiante: <span className="text-white">valeria.lopez</span> / <span className="text-white">NF2026</span></p>
+              <p>Empresa: <span className="text-white">empresas.demo</span> / <span className="text-white">DEMO123</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+function Dashboard({ user, onLogout }) {
+  const [activeTab, setActiveTab] = useState("resumen");
+
+  return (
+    <div className="min-h-screen bg-[#050d1a] flex flex-col">
+      <header className="bg-[#0a1628] border-b border-white/5 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#c8972a] to-[#f0c040] flex items-center justify-center text-[#050d1a] font-bold text-sm">
+                N
+              </div>
+              <span className="font-bold hidden sm:block text-white">NODO <span className="text-[#c8972a]">FISCAL</span></span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button className="text-slate-400 hover:text-white relative">
+                <Bell size={20} />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#0a1628]"></span>
+              </button>
+              
+              <div className="h-8 w-px bg-white/10 mx-2"></div>
+              
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[#c8972a] font-bold text-sm border border-[#c8972a]/30">
+                  {user.name.charAt(0)}
+                </div>
+                <span className="text-sm font-medium text-slate-200 hidden md:block">{user.name}</span>
+                <button onClick={onLogout} className="text-slate-400 hover:text-red-400 ml-2">
+                  <LogOut size={20} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6 lg:p-8">
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
+            Hola, {user.name.split(" ")[0]} 👋
+          </h1>
+          <p className="text-slate-400 mt-2">
+            {user.type === 'student' 
+              ? "Continúa con tu preparación hacia el nivel corporativo." 
+              : "Aquí tienes el resumen financiero y fiscal de tu empresa."}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: "RFC", value: user.rfc, icon: Shield },
+            { label: "Régimen", value: user.regime, icon: FileText },
+            { label: "Estatus", value: user.status, icon: CheckCircle2, ok: true },
+            { label: "Próximo Venc.", value: user.nextDue, icon: Calendar },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+              <div className="flex items-center gap-2 mb-2 text-slate-400">
+                <stat.icon size={16} className="text-[#c8972a]" />
+                <span className="text-xs font-semibold uppercase tracking-wider">{stat.label}</span>
+              </div>
+              <div className={`font-bold truncate ${stat.ok ? 'text-green-400' : 'text-white'}`}>
+                {stat.value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex overflow-x-auto border-b border-white/10 mb-6 pb-px hide-scrollbar">
+          {[
+            { id: "resumen", label: "Declaraciones", show: user.type === 'business' },
+            { id: "academia", label: "Mis Cursos", show: user.type === 'student' },
+            { id: "documentos", label: "Documentos", show: true },
+          ].filter(tab => tab.show).map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? "border-[#c8972a] text-[#c8972a]"
+                  : "border-transparent text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-6 min-h-[300px]">
+          {activeTab === "resumen" && user.type === 'business' && (
+            <div className="animate-in fade-in duration-300">
+              <h2 className="text-lg font-bold text-white mb-4">Historial de Declaraciones</h2>
+              <div className="space-y-3">
+                {user.declarations.map((dec, i) => (
+                  <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5 gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-[#c8972a]/10 text-[#c8972a] flex items-center justify-center">
+                        <FileText size={20} />
+                      </div>
+                      <div>
+                        <div className="font-bold text-white">{dec.period}</div>
+                        <div className="text-sm text-slate-400">Declaración Mensual</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
+                      <span className="font-mono text-white font-medium">{dec.amount}</span>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        dec.status === 'Presentada' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {dec.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "academia" && user.type === 'student' && (
+            <div className="animate-in fade-in duration-300">
+               <h2 className="text-lg font-bold text-white mb-4">Cursos Activos</h2>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {user.courses.map((course, i) => (
+                   <div key={i} className="bg-black/20 border border-white/5 rounded-xl p-5 hover:border-[#c8972a]/30 transition-colors group cursor-pointer">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="w-10 h-10 rounded-lg bg-[#c8972a]/10 text-[#c8972a] flex items-center justify-center">
+                          <PlayCircle size={20} />
+                        </div>
+                        <span className="text-xs font-medium text-slate-400 bg-white/5 px-2 py-1 rounded-md">{course.totalHours} hrs</span>
+                      </div>
+                      <h3 className="font-bold text-white mb-4 group-hover:text-[#c8972a] transition-colors">{course.title}</h3>
+                      
+                      <div>
+                        <div className="flex justify-between text-xs text-slate-400 mb-2">
+                          <span>Progreso</span>
+                          <span>{course.progress}%</span>
+                        </div>
+                        <div className="w-full bg-slate-800 rounded-full h-2">
+                          <div className="bg-gradient-to-r from-[#c8972a] to-[#f0c040] h-2 rounded-full" style={{width: `${course.progress}%`}}></div>
+                        </div>
+                      </div>
+                   </div>
+                 ))}
+               </div>
+            </div>
+          )}
+
+          {activeTab === "documentos" && (
+            <div className="animate-in fade-in duration-300">
+              <h2 className="text-lg font-bold text-white mb-4">Repositorio Digital</h2>
+              <div className="space-y-3">
+                {user.documents.map((doc, i) => (
+                  <div key={i} className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5 group hover:border-[#c8972a]/20">
+                    <div className="flex items-center gap-3">
+                       <FileText size={18} className="text-[#c8972a]" />
+                       <span className="text-sm font-medium text-slate-200">{doc}</span>
+                    </div>
+                    <button className="text-slate-400 hover:text-[#c8972a] flex items-center gap-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-all">
+                      <Download size={16} /> <span className="hidden sm:inline">Descargar</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
+      </main>
+    </div>
+  );
+}
