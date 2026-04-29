@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nodo Fiscal | Despacho 100% Digital & Academia</title>
+  <title>Nodo Fiscal | Despacho Contable Digital & Academia</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -15,22 +15,25 @@
         extend: {
           colors: {
             brand: {
-              dark: '#050d1a',
-              card: '#0a1628',
+              dark: '#030812', /* Un azul oscuro aún más profundo */
+              card: '#081221',
+              border: '#1a2942',
               gold: '#c8972a',
-              goldHover: '#dca838',
+              goldHover: '#e5b13a',
               light: '#f0c040',
-              text: '#f0e8d0'
+              text: '#f8f9fa',
+              muted: '#94a3b8'
             }
           },
           fontFamily: {
             sans: ['Sora', 'sans-serif'],
           },
           animation: {
-            'fade-in': 'fadeIn 0.3s ease-out forwards',
-            'slide-up': 'slideUp 0.4s ease-out forwards',
+            'fade-in': 'fadeIn 0.5s ease-out forwards',
+            'slide-up': 'slideUp 0.6s ease-out forwards',
             'spin-slow': 'spin 3s linear infinite',
-            'scroll': 'scroll 35s linear infinite' /* Animación para el carrusel */
+            'scroll': 'scroll 40s linear infinite',
+            'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
           },
           keyframes: {
             fadeIn: {
@@ -38,12 +41,16 @@
               '100%': { opacity: '1' },
             },
             slideUp: {
-              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
             },
             scroll: {
               '0%': { transform: 'translateX(0)' },
-              '100%': { transform: 'translateX(-100%)' }
+              '100%': { transform: 'translateX(-50%)' } /* Ajustado para scroll suave duplicado */
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '.5' }
             }
           }
         }
@@ -56,18 +63,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Phosphor Icons CDN (Alternativa a Lucide para Vanilla JS) -->
+  <!-- Phosphor Icons CDN -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
-    body { background-color: #050d1a; color: #e2e8f0; font-family: 'Sora', sans-serif; overflow-x: hidden; }
+    body { background-color: #030812; color: #f8f9fa; font-family: 'Sora', sans-serif; overflow-x: hidden; }
     ::selection { background-color: #c8972a; color: #fff; }
     .hide-scrollbar::-webkit-scrollbar { display: none; }
     .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    /* Estilos personalizados para inputs */
+    
+    /* Para que el header fijo no tape los títulos al hacer clic en el ancla */
+    section { scroll-margin-top: 80px; }
+
+    /* Inputs Autofill fix oscuro */
     input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active{
-      -webkit-box-shadow: 0 0 0 30px #0a1628 inset !important;
+      -webkit-box-shadow: 0 0 0 30px #081221 inset !important;
       -webkit-text-fill-color: white !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    .glass-nav {
+      background: rgba(3, 8, 18, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
   </style>
 </head>
@@ -78,36 +98,33 @@
        ========================================================================= -->
   <div id="view-landing" class="block w-full">
     
-    <!-- Background Grid -->
-    <div class="fixed inset-0 bg-[linear-gradient(to_right,#c8972a1a_1px,transparent_1px),linear-gradient(to_bottom,#c8972a1a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none z-[-1]"></div>
-
-    <!-- Navbar -->
-    <nav class="fixed w-full z-40 bg-brand-dark/80 backdrop-blur-md border-b border-white/5">
+    <!-- Navbar (Fija y con efecto Glassmorphism al scrollear) -->
+    <nav id="main-nav" class="fixed w-full z-50 transition-all duration-300 bg-transparent border-b border-transparent">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-20">
           <!-- Logo -->
-          <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-xl shadow-lg shadow-brand-gold/20">
+          <div class="flex items-center gap-3 cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-xl shadow-lg shadow-brand-gold/20 group-hover:scale-105 transition-transform">
               N
             </div>
-            <span class="font-bold text-xl tracking-tight text-white">
+            <span class="font-bold text-xl tracking-tight text-white group-hover:text-brand-light transition-colors">
               NODO <span class="text-brand-gold">FISCAL</span>
             </span>
           </div>
           
           <!-- Desktop Menu -->
           <div class="hidden md:flex items-center gap-8">
-            <a href="#despacho" class="text-sm font-medium text-slate-300 hover:text-brand-light transition-colors">Despacho</a>
-            <a href="#academia" class="text-sm font-medium text-slate-300 hover:text-brand-light transition-colors">Academia</a>
-            <a href="#planes" class="text-sm font-medium text-slate-300 hover:text-brand-light transition-colors">Planes</a>
-            <button onclick="app.navigate('login')" class="bg-gradient-to-r from-brand-gold to-brand-light hover:from-brand-goldHover hover:to-[#f5cc5a] text-brand-dark font-bold py-2.5 px-6 rounded-lg transition-all transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-gold/30">
+            <a href="#despacho" class="text-sm font-medium text-slate-300 hover:text-brand-light transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-brand-gold hover:after:w-full after:transition-all">Despacho</a>
+            <a href="#academia" class="text-sm font-medium text-slate-300 hover:text-brand-light transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-brand-gold hover:after:w-full after:transition-all">Academia</a>
+            <a href="#planes" class="text-sm font-medium text-slate-300 hover:text-brand-light transition-colors relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-brand-gold hover:after:w-full after:transition-all">Planes</a>
+            <button onclick="app.navigate('login')" class="bg-gradient-to-r from-brand-gold to-brand-light hover:from-brand-goldHover hover:to-[#f5cc5a] text-brand-dark font-bold py-2.5 px-7 rounded-full transition-all transform hover:-translate-y-0.5 hover:shadow-[0_0_20px_rgba(200,151,42,0.4)]">
               Portal Cliente
             </button>
           </div>
 
           <!-- Mobile Menu Button -->
           <div class="md:hidden flex items-center">
-            <button onclick="app.toggleMobileMenu()" class="text-slate-300 hover:text-white">
+            <button onclick="app.toggleMobileMenu()" class="text-slate-300 hover:text-brand-light transition-colors p-2">
               <i class="ph ph-list text-3xl" id="mobile-menu-icon"></i>
             </button>
           </div>
@@ -115,140 +132,201 @@
       </div>
 
       <!-- Mobile Menu (Hidden by default) -->
-      <div id="mobile-menu" class="hidden md:hidden bg-brand-card border-b border-white/10 px-4 pt-2 pb-4 space-y-1">
-        <a href="#despacho" onclick="app.toggleMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-white/5">Despacho</a>
-        <a href="#academia" onclick="app.toggleMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-white/5">Academia</a>
-        <a href="#planes" onclick="app.toggleMobileMenu()" class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-white/5">Planes</a>
-        <button onclick="app.navigate('login'); app.toggleMobileMenu()" class="w-full text-left px-3 py-2 mt-2 rounded-md text-base font-bold text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20">
-          Acceder al Portal
+      <div id="mobile-menu" class="hidden md:hidden glass-nav absolute w-full top-20 left-0 px-4 py-4 space-y-2 border-t border-white/5">
+        <a href="#despacho" onclick="app.toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:text-brand-gold hover:bg-white/5 transition-colors"><i class="ph-fill ph-buildings mr-2"></i> Despacho</a>
+        <a href="#academia" onclick="app.toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:text-brand-gold hover:bg-white/5 transition-colors"><i class="ph-fill ph-graduation-cap mr-2"></i> Academia</a>
+        <a href="#planes" onclick="app.toggleMobileMenu()" class="block px-4 py-3 rounded-xl text-base font-medium text-slate-200 hover:text-brand-gold hover:bg-white/5 transition-colors"><i class="ph-fill ph-star mr-2"></i> Planes</a>
+        <button onclick="app.navigate('login'); app.toggleMobileMenu()" class="w-full mt-4 bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-brand-gold/20 flex justify-center items-center gap-2">
+          <i class="ph-fill ph-sign-in text-lg"></i> Acceder al Portal
         </button>
       </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 animate-slide-up">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-semibold uppercase tracking-wider mb-8">
+    <!-- HERO SECTION CON IMAGEN DE FONDO -->
+    <section class="relative min-h-[90vh] flex items-center pt-20 pb-16 px-4 overflow-hidden">
+      <!-- Background Image (Contable/Tech) con Overlay -->
+      <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2000&auto=format&fit=crop" alt="Finanzas Corporativas" class="w-full h-full object-cover opacity-20 mix-blend-luminosity" />
+        <div class="absolute inset-0 bg-gradient-to-b from-brand-dark/80 via-brand-dark/95 to-brand-dark"></div>
+      </div>
+
+      <!-- Partículas de luz dorada animadas -->
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-gold/10 rounded-full blur-[120px] animate-pulse-glow z-0 pointer-events-none"></div>
+
+      <div class="max-w-5xl mx-auto text-center relative z-10 animate-slide-up">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-gold/10 border border-brand-gold/20 text-brand-gold text-xs font-semibold uppercase tracking-widest mb-8 backdrop-blur-sm">
           <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span>
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-light opacity-75"></span>
             <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-gold"></span>
           </span>
           Despacho 100% Digital & Academia
         </div>
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-6">
-          Evoluciona tu <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-brand-light">Contabilidad</span><br/>a la era tecnológica.
+        
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white leading-[1.1] mb-8 tracking-tight">
+          Evoluciona tu <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold via-brand-light to-white">Contabilidad</span><br/>a la era tecnológica.
         </h1>
-        <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Cerramos la brecha entre la teoría y la exigencia corporativa. Cumplimiento legal, NIIF y automatización con Python para negocios y profesionales en Tabasco y todo México.
+        
+        <p class="text-lg md:text-xl text-brand-muted mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+          Cerramos la brecha entre la teoría y la exigencia corporativa. Cumplimiento legal impecable, NIIF y automatización con Python para negocios en Tabasco y México.
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button onclick="app.navigate('login')" class="w-full sm:w-auto bg-gradient-to-r from-brand-gold to-brand-light hover:from-brand-goldHover hover:to-[#f5cc5a] text-brand-dark font-bold py-4 px-8 rounded-xl transition-all transform hover:-translate-y-1 hover:shadow-xl hover:shadow-brand-gold/20 flex items-center justify-center gap-2">
-            <i class="ph-fill ph-shield-check text-xl"></i> Ingresar al portal
+        
+        <div class="flex flex-col sm:flex-row gap-5 justify-center items-center">
+          <button onclick="app.navigate('login')" class="w-full sm:w-auto bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-bold py-4 px-10 rounded-full transition-all transform hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(200,151,42,0.4)] flex items-center justify-center gap-3 text-lg">
+            <i class="ph-fill ph-shield-check text-2xl"></i> Ingresar al portal
           </button>
-          <a href="#academia" class="w-full sm:w-auto bg-transparent border-2 border-brand-gold/30 text-brand-text hover:bg-brand-gold/10 hover:border-brand-gold font-bold py-4 px-8 rounded-xl transition-all flex items-center justify-center gap-2">
-            <i class="ph-fill ph-book-open text-xl"></i> Ver Capacitación
+          <a href="#academia" class="w-full sm:w-auto bg-brand-card/50 backdrop-blur-md border border-brand-border text-white hover:bg-brand-gold/10 hover:border-brand-gold/50 font-bold py-4 px-10 rounded-full transition-all flex items-center justify-center gap-3 text-lg group">
+            <i class="ph-fill ph-graduation-cap text-2xl text-brand-gold group-hover:text-brand-light transition-colors"></i> Ver Capacitación
           </a>
         </div>
       </div>
     </section>
 
-    <!-- DESPACHO SECTION -->
-    <section id="despacho" class="py-24 bg-brand-card relative border-t border-white/5 scroll-mt-16">
+    <!-- TRUST BADGES (MARQUEE INFINITO) movido arriba para dar credibilidad inmediata -->
+    <section class="py-10 bg-brand-card border-y border-white/5 relative z-10 overflow-hidden">
+      <!-- Gradientes laterales -->
+      <div class="absolute top-0 bottom-0 left-0 w-24 md:w-48 bg-gradient-to-r from-brand-card to-transparent z-10 pointer-events-none"></div>
+      <div class="absolute top-0 bottom-0 right-0 w-24 md:w-48 bg-gradient-to-l from-brand-card to-transparent z-10 pointer-events-none"></div>
+      
+      <div class="relative flex overflow-hidden group items-center">
+        <div id="marquee-track-1" class="flex animate-scroll whitespace-nowrap items-center w-max flex-shrink-0">
+          <!-- JS Inject: Companies -->
+        </div>
+        <div id="marquee-track-2" class="flex animate-scroll whitespace-nowrap items-center w-max flex-shrink-0" aria-hidden="true">
+          <!-- JS Inject: Companies -->
+        </div>
+      </div>
+    </section>
+
+    <!-- DESPACHO SECTION (CON FOTOGRAFÍA) -->
+    <section id="despacho" class="py-24 bg-brand-dark relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <span class="text-brand-gold font-bold tracking-wider uppercase text-sm mb-2 block">Nosotros</span>
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Un Despacho <span class="text-brand-gold">Diferente</span></h2>
-            <p class="text-slate-400 text-lg mb-6 leading-relaxed">
-              Fundado por estudiantes y futuros colegas de la <strong>Universidad Juárez Autónoma de Tabasco (DACEA)</strong>, Nodo Fiscal nace para romper el molde. Vimos que la contabilidad tradicional es lenta, frustrante y desconectada del mundo tecnológico actual.
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          <!-- Texto -->
+          <div class="order-2 lg:order-1">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="h-px w-8 bg-brand-gold"></div>
+              <span class="text-brand-gold font-bold tracking-widest uppercase text-sm">Identidad</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-8">Un Despacho <span class="text-brand-gold">Diferente</span></h2>
+            
+            <p class="text-brand-muted text-lg mb-6 leading-relaxed">
+              Fundado por estudiantes y futuros colegas de la <strong class="text-white font-semibold">Universidad Juárez Autónoma de Tabasco (DACEA)</strong>, Nodo Fiscal nace para romper el molde. Notamos que la contabilidad tradicional es lenta, frustrante y desconectada del mundo corporativo tecnológico.
             </p>
-            <p class="text-slate-400 text-lg mb-8 leading-relaxed">
-              Nuestro objetivo es simple: <strong>usar la tecnología para darte paz mental.</strong> Sustituimos el papeleo manual por código en Python y bases de datos, permitiéndote tener la salud de tu negocio en la palma de tu mano, con costos competitivos al ser 100% digitales.
+            <p class="text-brand-muted text-lg mb-10 leading-relaxed">
+              Nuestro objetivo es simple: <strong class="text-white font-semibold">usar la tecnología para darte paz mental.</strong> Sustituimos el papeleo manual por código en Python y bases de datos, permitiéndote tener la salud financiera de tu negocio en la palma de tu mano, de forma rápida y sin errores.
             </p>
-            <div class="flex gap-6">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold border border-brand-gold/20">
-                  <i class="ph-fill ph-users text-xl"></i>
+            
+            <div class="flex flex-wrap gap-8">
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-brand-card flex items-center justify-center text-brand-gold border border-brand-border shadow-lg">
+                  <i class="ph-fill ph-users-three text-3xl"></i>
                 </div>
-                <span class="font-medium text-white">Equipo Joven</span>
+                <div>
+                  <div class="font-bold text-white text-lg">Equipo Joven</div>
+                  <div class="text-sm text-brand-muted">Visión innovadora</div>
+                </div>
               </div>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-brand-gold/10 flex items-center justify-center text-brand-gold border border-brand-gold/20">
-                  <i class="ph-fill ph-target text-xl"></i>
+              <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-brand-card flex items-center justify-center text-brand-gold border border-brand-border shadow-lg">
+                  <i class="ph-fill ph-rocket-launch text-3xl"></i>
                 </div>
-                <span class="font-medium text-white">100% Digital</span>
+                <div>
+                  <div class="font-bold text-white text-lg">100% Digital</div>
+                  <div class="text-sm text-brand-muted">Ágil y sin papel</div>
+                </div>
               </div>
             </div>
           </div>
           
-          <div class="relative">
-            <div class="absolute inset-0 bg-gradient-to-tr from-brand-gold/20 to-transparent rounded-3xl blur-2xl"></div>
-            <div class="bg-brand-dark border border-white/10 rounded-3xl p-8 relative z-10 shadow-2xl">
-              <h3 class="text-xl font-bold text-white mb-6 text-center border-b border-white/10 pb-4">Nuestros Servicios Estratégicos</h3>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
-                <div class="flex gap-3 p-4 rounded-xl bg-white/5 hover:bg-brand-gold/10 transition-colors border border-transparent hover:border-brand-gold/30 group">
-                  <i class="ph-fill ph-shield-check text-2xl text-brand-gold shrink-0 mt-0.5 group-hover:scale-110 transition-transform"></i>
-                  <div><div class="text-sm font-bold text-white">Gestión Fiscal</div><div class="text-xs text-slate-400 mt-1">SAT, Buzón y Declaraciones</div></div>
+          <!-- Imagen y Tarjetas de Servicios -->
+          <div class="order-1 lg:order-2 relative">
+            <!-- Imagen de fondo decorativa -->
+            <div class="relative rounded-[2rem] overflow-hidden border border-brand-border shadow-2xl aspect-[4/3] group">
+              <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop" alt="Equipo Nodo Fiscal Trabajando" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60 mix-blend-luminosity hover:mix-blend-normal hover:opacity-100" />
+              <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/50 to-transparent"></div>
+              
+              <!-- Cards superpuestas -->
+              <div class="absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-3">
+                <div class="bg-brand-card/90 backdrop-blur-md p-4 rounded-xl border border-brand-border/50 hover:border-brand-gold/50 transition-colors">
+                  <i class="ph-fill ph-shield-check text-2xl text-brand-gold mb-2"></i>
+                  <div class="text-sm font-bold text-white">Gestión Fiscal</div>
+                  <div class="text-xs text-brand-muted mt-1 truncate">SAT y Declaraciones</div>
                 </div>
-                <div class="flex gap-3 p-4 rounded-xl bg-white/5 hover:bg-brand-gold/10 transition-colors border border-transparent hover:border-brand-gold/30 group">
-                  <i class="ph-fill ph-chart-bar text-2xl text-brand-gold shrink-0 mt-0.5 group-hover:scale-110 transition-transform"></i>
-                  <div><div class="text-sm font-bold text-white">Normas NIIF</div><div class="text-xs text-slate-400 mt-1">Estándares corporativos</div></div>
+                <div class="bg-brand-card/90 backdrop-blur-md p-4 rounded-xl border border-brand-border/50 hover:border-brand-gold/50 transition-colors">
+                  <i class="ph-fill ph-chart-line-up text-2xl text-brand-gold mb-2"></i>
+                  <div class="text-sm font-bold text-white">Normas NIIF</div>
+                  <div class="text-xs text-brand-muted mt-1 truncate">Estándares Globales</div>
                 </div>
-                <div class="flex gap-3 p-4 rounded-xl bg-white/5 hover:bg-brand-gold/10 transition-colors border border-transparent hover:border-brand-gold/30 group">
-                  <i class="ph-fill ph-lightning text-2xl text-brand-gold shrink-0 mt-0.5 group-hover:scale-110 transition-transform"></i>
-                  <div><div class="text-sm font-bold text-white">Automatización</div><div class="text-xs text-slate-400 mt-1">Limpieza de datos en segundos</div></div>
+                <div class="bg-brand-card/90 backdrop-blur-md p-4 rounded-xl border border-brand-border/50 hover:border-brand-gold/50 transition-colors">
+                  <i class="ph-fill ph-file-code text-2xl text-brand-gold mb-2"></i>
+                  <div class="text-sm font-bold text-white">Automatización</div>
+                  <div class="text-xs text-brand-muted mt-1 truncate">Python & SQL</div>
                 </div>
-                <div class="flex gap-3 p-4 rounded-xl bg-white/5 hover:bg-brand-gold/10 transition-colors border border-transparent hover:border-brand-gold/30 group">
-                  <i class="ph-fill ph-file-text text-2xl text-brand-gold shrink-0 mt-0.5 group-hover:scale-110 transition-transform"></i>
-                  <div><div class="text-sm font-bold text-white">RESICO</div><div class="text-xs text-slate-400 mt-1">Plataformas digitales</div></div>
+                <div class="bg-brand-card/90 backdrop-blur-md p-4 rounded-xl border border-brand-border/50 hover:border-brand-gold/50 transition-colors">
+                  <i class="ph-fill ph-device-mobile text-2xl text-brand-gold mb-2"></i>
+                  <div class="text-sm font-bold text-white">RESICO</div>
+                  <div class="text-xs text-brand-muted mt-1 truncate">Plataformas Digitales</div>
                 </div>
-
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>
 
     <!-- ACADEMIA SECTION (Destacados) -->
-    <section id="academia" class="py-24 relative overflow-hidden bg-brand-dark border-t border-white/5 scroll-mt-16">
+    <section id="academia" class="py-24 relative overflow-hidden bg-brand-card border-t border-brand-border scroll-mt-16">
+      <div class="absolute right-0 top-0 w-[500px] h-[500px] bg-brand-gold/5 rounded-full blur-[100px] pointer-events-none"></div>
+
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center mb-16">
-          <span class="text-brand-gold font-bold tracking-wider uppercase text-sm mb-2 block">Plataforma Educativa</span>
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Nodo Fiscal <span class="text-brand-gold">Academy</span></h2>
-          <p class="text-slate-400 max-w-2xl mx-auto text-lg">Cursos diseñados para evolucionar de auxiliar contable a Analista Estratégico.</p>
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <div class="max-w-2xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="h-px w-8 bg-brand-gold"></div>
+              <span class="text-brand-gold font-bold tracking-widest uppercase text-sm">Capacitación</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">Nodo Fiscal <span class="text-brand-gold">Academy</span></h2>
+            <p class="text-brand-muted text-lg">Transforma tu carrera de auxiliar contable a Analista Financiero Estratégico dominando la tecnología.</p>
+          </div>
+          <button onclick="app.openCatalogModal()" class="group hidden md:flex items-center gap-3 bg-brand-dark border border-brand-border text-white font-bold py-3 px-6 rounded-full hover:bg-brand-border transition-all whitespace-nowrap">
+            Ver catálogo completo
+            <i class="ph-bold ph-arrow-right text-lg text-brand-gold group-hover:translate-x-1 transition-transform"></i>
+          </button>
         </div>
 
-        <div id="featured-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div id="featured-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <!-- JS Inject: Featured Courses -->
         </div>
 
-        <div class="flex justify-center">
-          <button onclick="app.openCatalogModal()" class="group flex items-center gap-3 bg-transparent border-2 border-brand-gold/40 text-brand-text font-bold py-3.5 px-8 rounded-full hover:bg-brand-gold/10 hover:border-brand-gold transition-all">
-            Explorar catálogo completo (8 cursos)
-            <i class="ph-bold ph-caret-right text-xl group-hover:translate-x-1 transition-transform"></i>
-          </button>
-        </div>
+        <button onclick="app.openCatalogModal()" class="w-full md:hidden group flex justify-center items-center gap-3 bg-brand-dark border border-brand-border text-white font-bold py-4 px-6 rounded-2xl hover:bg-brand-border transition-all">
+          Ver todos los cursos (8)
+          <i class="ph-bold ph-arrow-right text-lg text-brand-gold group-hover:translate-x-1 transition-transform"></i>
+        </button>
       </div>
     </section>
 
     <!-- PLANES SECTION -->
-    <section id="planes" class="py-24 bg-brand-card border-t border-white/5 relative scroll-mt-16">
+    <section id="planes" class="py-24 bg-brand-dark border-t border-brand-border relative scroll-mt-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center mb-10">
-          <span class="text-brand-gold font-bold tracking-wider uppercase text-sm mb-2 block">Suscripciones</span>
-          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Planes de <span class="text-brand-gold">Contabilidad</span></h2>
-          <p class="text-slate-400 max-w-2xl mx-auto text-lg">Un modelo de iguala mensual escalable, basado en el tamaño, nómina y necesidades de tu operación.</p>
+        <div class="text-center mb-12">
+          <div class="flex items-center justify-center gap-3 mb-4">
+            <div class="h-px w-8 bg-brand-gold"></div>
+            <span class="text-brand-gold font-bold tracking-widest uppercase text-sm">Suscripciones</span>
+            <div class="h-px w-8 bg-brand-gold"></div>
+          </div>
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Planes de <span class="text-brand-gold">Contabilidad</span></h2>
+          <p class="text-brand-muted max-w-2xl mx-auto text-lg">Modelo de iguala mensual claro y escalable. Céntrate en hacer crecer tu negocio, nosotros nos encargamos de los números.</p>
         </div>
 
-        <!-- Toggle de Planes -->
-        <div class="flex justify-center mb-12">
-          <div class="bg-brand-dark border border-white/10 p-1.5 rounded-2xl flex items-center gap-1 shadow-lg shadow-brand-gold/5">
-            <button id="btn-toggle-fisicas" onclick="app.setPricingCategory('fisicas')" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all bg-brand-gold text-brand-dark shadow-md">
+        <!-- Toggle de Planes con estilo Premium -->
+        <div class="flex justify-center mb-16">
+          <div class="bg-brand-card border border-brand-border p-1.5 rounded-full flex items-center gap-1 shadow-lg shadow-brand-gold/5">
+            <button id="btn-toggle-fisicas" onclick="app.setPricingCategory('fisicas')" class="px-8 py-3 rounded-full text-sm font-bold transition-all bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark shadow-md">
               Personas Físicas
             </button>
-            <button id="btn-toggle-empresas" onclick="app.setPricingCategory('empresas')" class="px-6 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-400 hover:text-white">
+            <button id="btn-toggle-empresas" onclick="app.setPricingCategory('empresas')" class="px-8 py-3 rounded-full text-sm font-bold transition-all text-slate-400 hover:text-white hover:bg-white/5">
               Empresas & Consultoría
             </button>
           </div>
@@ -260,39 +338,66 @@
       </div>
     </section>
 
-    <!-- TRUST BADGES (MARQUEE INFINITO) -->
-    <section class="py-16 bg-brand-dark border-t border-white/5 relative z-10 overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10">
-        <h3 class="text-slate-400 text-sm font-bold uppercase tracking-widest">
-          Gracias por su confianza
-        </h3>
-      </div>
-      
-      <!-- Contenedor del Marquee -->
-      <div class="relative flex overflow-hidden group">
-        <!-- Gradientes laterales para difuminar entrada y salida -->
-        <div class="absolute top-0 bottom-0 left-0 w-16 md:w-32 bg-gradient-to-r from-brand-dark to-transparent z-10 pointer-events-none"></div>
-        <div class="absolute top-0 bottom-0 right-0 w-16 md:w-32 bg-gradient-to-l from-brand-dark to-transparent z-10 pointer-events-none"></div>
-        
-        <!-- Carril de logos 1 -->
-        <div id="marquee-track-1" class="flex animate-scroll whitespace-nowrap gap-16 items-center pr-16 opacity-60 group-hover:opacity-100 transition-opacity duration-500 w-max flex-shrink-0">
-          <!-- JS Inject: Companies -->
-        </div>
-        
-        <!-- Carril de logos 2 (Duplicado exacto para crear el loop sin fin) -->
-        <div id="marquee-track-2" class="flex animate-scroll whitespace-nowrap gap-16 items-center pr-16 opacity-60 group-hover:opacity-100 transition-opacity duration-500 w-max flex-shrink-0" aria-hidden="true">
-          <!-- JS Inject: Companies -->
-        </div>
-      </div>
-    </section>
+    <!-- FOOTER PROFESIONAL -->
+    <footer class="bg-brand-card border-t border-brand-border pt-16 pb-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+          
+          <!-- Brand -->
+          <div class="lg:col-span-1">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-xl">N</div>
+              <span class="font-bold text-xl tracking-tight text-white">NODO <span class="text-brand-gold">FISCAL</span></span>
+            </div>
+            <p class="text-brand-muted text-sm leading-relaxed mb-6">Despacho contable 100% digital y plataforma educativa para profesionales de alto rendimiento.</p>
+            <div class="flex gap-4">
+              <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-gold hover:border-brand-gold transition-colors"><i class="ph-fill ph-facebook-logo text-xl"></i></a>
+              <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-gold hover:border-brand-gold transition-colors"><i class="ph-fill ph-instagram-logo text-xl"></i></a>
+              <a href="#" class="w-10 h-10 rounded-full bg-brand-dark border border-brand-border flex items-center justify-center text-brand-muted hover:text-brand-gold hover:border-brand-gold transition-colors"><i class="ph-fill ph-linkedin-logo text-xl"></i></a>
+            </div>
+          </div>
 
-    <footer class="border-t border-white/10 py-12 text-center bg-brand-dark">
-      <div class="flex items-center justify-center gap-3 mb-6">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-sm">N</div>
-        <span class="font-bold text-lg text-white">NODO FISCAL</span>
+          <!-- Servicios -->
+          <div>
+            <h4 class="text-white font-bold mb-6">Servicios</h4>
+            <ul class="space-y-4">
+              <li><a href="#planes" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Contabilidad Personas Físicas</a></li>
+              <li><a href="#planes" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Contabilidad Empresas</a></li>
+              <li><a href="#despacho" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Implementación NIIF</a></li>
+              <li><a href="#despacho" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Automatización Python</a></li>
+            </ul>
+          </div>
+
+          <!-- Academia -->
+          <div>
+            <h4 class="text-white font-bold mb-6">Academia</h4>
+            <ul class="space-y-4">
+              <li><a href="#" onclick="app.openCatalogModal()" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Ver Catálogo de Cursos</a></li>
+              <li><a href="#" onclick="app.openCatalogModal()" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Cursos Gratuitos</a></li>
+              <li><a href="#" onclick="app.openCatalogModal()" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Certificación NIIF</a></li>
+              <li><a href="javascript:void(0)" onclick="app.navigate('login')" class="text-brand-muted hover:text-brand-light transition-colors text-sm">Acceso Alumnos</a></li>
+            </ul>
+          </div>
+
+          <!-- Contacto -->
+          <div>
+            <h4 class="text-white font-bold mb-6">Contacto</h4>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3 text-brand-muted text-sm"><i class="ph-fill ph-envelope-simple text-brand-gold text-lg shrink-0"></i> contacto@nodofiscal.mx</li>
+              <li class="flex items-start gap-3 text-brand-muted text-sm"><i class="ph-fill ph-whatsapp-logo text-brand-gold text-lg shrink-0"></i> +52 (993) 000 0000</li>
+              <li class="flex items-start gap-3 text-brand-muted text-sm"><i class="ph-fill ph-map-pin text-brand-gold text-lg shrink-0"></i> Universidad Juárez Autónoma de Tabasco (DACEA)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-brand-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p class="text-brand-muted text-xs text-center md:text-left">© 2026 Nodo Fiscal. Proyecto Universitario "Entrepreneurship".</p>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-brand-muted">Desarrollado por:</span>
+            <span class="text-xs font-bold text-slate-300">Fernando A. | Emilio H. | Critopher J. | Haziel O.</span>
+          </div>
+        </div>
       </div>
-      <p class="text-slate-500 text-sm">© 2026 Proyecto Universitario UJAT · DACEA · Entrepreneurship</p>
-      <p class="text-slate-600 text-xs mt-2">Equipo: Fernando Álvarez, Emilio Hernandez, Critopher Juarez, Haziel Oliva</p>
     </footer>
   </div>
 
@@ -301,53 +406,64 @@
        2. VISTA: LOGIN PAGE
        ========================================================================= -->
   <div id="view-login" class="hidden w-full flex-1">
-    <div class="min-h-screen flex items-center justify-center p-4 relative w-full">
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-gold/10 via-brand-dark to-brand-dark z-[-1]"></div>
+    <div class="min-h-screen flex items-center justify-center p-4 relative w-full bg-brand-dark">
+      <!-- Background sutil -->
+      <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-brand-gold/10 via-transparent to-transparent z-0"></div>
       
       <div class="w-full max-w-md relative z-10 animate-slide-up">
-        <button onclick="app.navigate('landing')" class="text-slate-400 hover:text-white flex items-center gap-2 mb-8 transition-colors text-sm font-medium">
-          <i class="ph-bold ph-caret-left"></i> Volver al inicio
+        <button onclick="app.navigate('landing')" class="text-brand-muted hover:text-white flex items-center gap-2 mb-8 transition-colors text-sm font-medium group">
+          <i class="ph-bold ph-arrow-left text-lg group-hover:-translate-x-1 transition-transform"></i> Volver al sitio web
         </button>
 
-        <div class="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl">
-          <div class="text-center mb-8">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-3xl mx-auto mb-4 shadow-lg shadow-brand-gold/20">
+        <div class="bg-brand-card/80 backdrop-blur-2xl border border-brand-border p-8 md:p-10 rounded-[2rem] shadow-2xl">
+          <div class="text-center mb-10">
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-4xl mx-auto mb-6 shadow-[0_10px_30px_rgba(200,151,42,0.3)]">
               N
             </div>
-            <h2 class="text-2xl font-bold text-white">Portal Nodo Fiscal</h2>
-            <p class="text-slate-400 text-sm mt-2">Accede a tus finanzas o capacitación</p>
+            <h2 class="text-2xl font-bold text-white">Portal de Acceso</h2>
+            <p class="text-brand-muted text-sm mt-2">Finanzas corporativas y academia</p>
           </div>
 
-          <form id="form-login" onsubmit="app.handleLogin(event)" class="space-y-5">
+          <form id="form-login" onsubmit="app.handleLogin(event)" class="space-y-6">
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-2">Usuario</label>
-              <input id="login-user" type="text" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all" placeholder="ej. valeria.lopez" />
+              <label class="block text-sm font-semibold text-slate-300 mb-2">Usuario / RFC</label>
+              <div class="relative">
+                <i class="ph-fill ph-user absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-lg"></i>
+                <input id="login-user" type="text" required class="w-full bg-brand-dark border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all" placeholder="ej. valeria.lopez" autocomplete="username" />
+              </div>
             </div>
             
             <div>
-              <label class="block text-sm font-medium text-slate-300 mb-2">Contraseña</label>
+              <label class="block text-sm font-semibold text-slate-300 mb-2">Contraseña</label>
               <div class="relative">
-                <input id="login-pass" type="password" required class="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all pr-12" placeholder="••••••••" />
-                <button type="button" onclick="app.togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
-                  <i id="login-eye-icon" class="ph-fill ph-eye text-lg"></i>
+                <i class="ph-fill ph-lock-key absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-lg"></i>
+                <input id="login-pass" type="password" required class="w-full bg-brand-dark border border-brand-border rounded-xl pl-12 pr-12 py-3.5 text-white focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold transition-all" placeholder="••••••••" autocomplete="current-password" />
+                <button type="button" onclick="app.togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-brand-muted hover:text-white transition-colors">
+                  <i id="login-eye-icon" class="ph-fill ph-eye text-xl"></i>
                 </button>
               </div>
             </div>
 
-            <div id="login-error" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-lg flex items-center gap-2">
-              <i class="ph-bold ph-x"></i> Credenciales incorrectas.
+            <div id="login-error" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-4 rounded-xl flex items-start gap-3">
+              <i class="ph-fill ph-warning-circle text-lg shrink-0"></i> <span>Credenciales incorrectas. Verifica tus datos o usa las cuentas de prueba.</span>
             </div>
 
-            <button id="btn-login-submit" type="submit" class="w-full bg-gradient-to-r from-brand-gold to-brand-light hover:from-brand-goldHover hover:to-[#f5cc5a] text-brand-dark font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 mt-4">
-              <span>Ingresar</span>
+            <button id="btn-login-submit" type="submit" class="w-full bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-bold py-4 rounded-xl transition-all hover:shadow-[0_0_20px_rgba(200,151,42,0.4)] flex items-center justify-center gap-2 mt-4 text-lg">
+              <span>Ingresar Seguramente</span>
             </button>
           </form>
 
-          <div class="mt-8 p-4 rounded-xl border border-brand-gold/20 bg-brand-gold/5">
-            <p class="text-xs text-brand-gold font-bold uppercase mb-2">Credenciales de prueba:</p>
-            <div class="text-sm text-slate-400 space-y-1">
-              <p>Estudiante: <span class="text-white">valeria.lopez</span> / <span class="text-white">NF2026</span></p>
-              <p>Empresa: <span class="text-white">empresas.demo</span> / <span class="text-white">DEMO123</span></p>
+          <div class="mt-8 pt-6 border-t border-brand-border">
+            <p class="text-xs text-brand-gold font-bold uppercase tracking-widest mb-3 text-center">Cuentas Demostrativas</p>
+            <div class="bg-brand-dark rounded-xl p-4 border border-brand-border space-y-2">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-brand-muted">🎓 Alumna:</span>
+                <span class="text-white font-mono bg-white/5 px-2 py-1 rounded">valeria.lopez / NF2026</span>
+              </div>
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-brand-muted">🏢 Empresa:</span>
+                <span class="text-white font-mono bg-white/5 px-2 py-1 rounded">empresas.demo / DEMO123</span>
+              </div>
             </div>
           </div>
         </div>
@@ -360,28 +476,27 @@
        3. VISTA: DASHBOARD
        ========================================================================= -->
   <div id="view-dashboard" class="hidden w-full flex-1 flex flex-col bg-brand-dark min-h-screen">
-    <header class="bg-brand-card border-b border-white/5 sticky top-0 z-40">
+    <header class="glass-nav sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
+        <div class="flex justify-between items-center h-20">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-sm">
-              N
-            </div>
-            <span class="font-bold hidden sm:block text-white">NODO <span class="text-brand-gold">FISCAL</span></span>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold to-brand-light flex items-center justify-center text-brand-dark font-bold text-xl shadow-lg shadow-brand-gold/20">N</div>
+            <span class="font-bold text-xl hidden sm:block text-white">NODO <span class="text-brand-gold">FISCAL</span></span>
           </div>
           
-          <div class="flex items-center gap-4">
-            <button class="text-slate-400 hover:text-white relative">
+          <div class="flex items-center gap-5">
+            <button class="text-brand-muted hover:text-white relative p-2 bg-brand-card rounded-full border border-brand-border transition-colors">
               <i class="ph-fill ph-bell text-xl"></i>
-              <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-brand-card"></span>
+              <span class="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-brand-card"></span>
             </button>
-            <div class="h-8 w-px bg-white/10 mx-2"></div>
+            <div class="h-10 w-px bg-brand-border mx-1"></div>
             <div class="flex items-center gap-3">
-              <div id="dash-user-init" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-brand-gold font-bold text-sm border border-brand-gold/30">
-                U
+              <div class="text-right hidden md:block">
+                <div id="dash-user-name" class="text-sm font-bold text-white">Usuario</div>
+                <div id="dash-user-type" class="text-xs text-brand-gold">Perfil</div>
               </div>
-              <span id="dash-user-name" class="text-sm font-medium text-slate-200 hidden md:block">Usuario</span>
-              <button onclick="app.logout()" class="text-slate-400 hover:text-red-400 ml-2" title="Cerrar sesión">
+              <div id="dash-user-init" class="w-10 h-10 rounded-xl bg-brand-card flex items-center justify-center text-brand-gold font-bold text-lg border border-brand-gold/30 shadow-inner">U</div>
+              <button onclick="app.logout()" class="text-brand-muted hover:text-red-400 p-2 ml-2 transition-colors bg-white/5 rounded-full" title="Cerrar sesión">
                 <i class="ph-bold ph-sign-out text-xl"></i>
               </button>
             </div>
@@ -390,64 +505,80 @@
       </div>
     </header>
 
-    <main class="flex-1 max-w-5xl mx-auto w-full p-4 sm:p-6 lg:p-8 animate-fade-in">
-      <div class="mb-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-white">
-          Hola, <span id="dash-welcome-name">Usuario</span> 👋
+    <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 animate-fade-in">
+      <div class="mb-10 mt-4">
+        <h1 class="text-3xl md:text-4xl font-bold text-white">
+          Bienvenido de vuelta, <span id="dash-welcome-name" class="text-brand-gold">Usuario</span> 👋
         </h1>
-        <p id="dash-welcome-desc" class="text-slate-400 mt-2">Bienvenido a tu portal.</p>
+        <p id="dash-welcome-desc" class="text-brand-muted text-lg mt-2">Este es el panel de control de tu información.</p>
       </div>
 
       <!-- Tarjetas de Información -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <div class="flex items-center gap-2 mb-2 text-slate-400">
-            <i class="ph-fill ph-shield-check text-brand-gold"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">RFC</span>
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-10">
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 hover:border-brand-gold/30 transition-colors">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-brand-muted">RFC Registrado</span>
+            <div class="w-8 h-8 rounded-lg bg-brand-gold/10 text-brand-gold flex justify-center items-center"><i class="ph-fill ph-identification-card text-lg"></i></div>
           </div>
-          <div id="dash-stat-rfc" class="font-bold truncate text-white">--</div>
+          <div id="dash-stat-rfc" class="font-bold text-xl truncate text-white">--</div>
         </div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <div class="flex items-center gap-2 mb-2 text-slate-400">
-            <i class="ph-fill ph-file-text text-brand-gold"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">Régimen</span>
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 hover:border-brand-gold/30 transition-colors">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-brand-muted">Régimen Fiscal</span>
+            <div class="w-8 h-8 rounded-lg bg-brand-gold/10 text-brand-gold flex justify-center items-center"><i class="ph-fill ph-buildings text-lg"></i></div>
           </div>
-          <div id="dash-stat-regime" class="font-bold truncate text-white">--</div>
+          <div id="dash-stat-regime" class="font-bold text-[15px] truncate text-white">--</div>
         </div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <div class="flex items-center gap-2 mb-2 text-slate-400">
-            <i class="ph-fill ph-check-circle text-brand-gold"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">Estatus</span>
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 hover:border-brand-gold/30 transition-colors">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-brand-muted">Estatus SAT</span>
+            <div class="w-8 h-8 rounded-lg bg-green-500/10 text-green-400 flex justify-center items-center"><i class="ph-fill ph-check-circle text-lg"></i></div>
           </div>
-          <div id="dash-stat-status" class="font-bold truncate text-green-400">--</div>
+          <div id="dash-stat-status" class="font-bold text-xl truncate text-green-400">--</div>
         </div>
-        <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
-          <div class="flex items-center gap-2 mb-2 text-slate-400">
-            <i class="ph-fill ph-calendar text-brand-gold"></i>
-            <span class="text-xs font-semibold uppercase tracking-wider">Próx. Venc.</span>
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 hover:border-brand-gold/30 transition-colors">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-brand-muted">Próximo Vencimiento</span>
+            <div class="w-8 h-8 rounded-lg bg-brand-gold/10 text-brand-gold flex justify-center items-center"><i class="ph-fill ph-calendar-blank text-lg"></i></div>
           </div>
-          <div id="dash-stat-date" class="font-bold truncate text-white">--</div>
+          <div id="dash-stat-date" class="font-bold text-xl truncate text-white">--</div>
         </div>
       </div>
 
-      <!-- Pestañas -->
-      <div id="dash-tabs-container" class="flex overflow-x-auto border-b border-white/10 mb-6 pb-px hide-scrollbar">
-        <!-- JS Inject -->
-      </div>
+      <!-- Pestañas y Contenido Principal -->
+      <div class="bg-brand-card border border-brand-border rounded-[2rem] overflow-hidden shadow-2xl">
+        <!-- TABS Header -->
+        <div id="dash-tabs-container" class="flex overflow-x-auto border-b border-brand-border bg-brand-dark/50 hide-scrollbar px-2 pt-2">
+          <!-- JS Inject -->
+        </div>
 
-      <!-- Contenido Pestañas -->
-      <div class="bg-white/5 border border-white/10 rounded-2xl p-6 min-h-[300px] relative">
-        <div id="dash-tab-resumen" class="hidden animate-fade-in">
-          <h2 class="text-lg font-bold text-white mb-4">Historial de Declaraciones</h2>
-          <div id="dash-content-resumen" class="space-y-3"></div>
-        </div>
-        <div id="dash-tab-academia" class="hidden animate-fade-in">
-          <h2 class="text-lg font-bold text-white mb-4">Cursos Activos</h2>
-          <div id="dash-content-academia" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        </div>
-        <div id="dash-tab-documentos" class="hidden animate-fade-in">
-          <h2 class="text-lg font-bold text-white mb-4">Repositorio Digital</h2>
-          <div id="dash-content-documentos" class="space-y-3"></div>
+        <!-- TABS Body -->
+        <div class="p-6 md:p-8 min-h-[400px]">
+          
+          <!-- TAB: Resumen (Empresas) -->
+          <div id="dash-tab-resumen" class="hidden animate-fade-in">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold text-white">Declaraciones Fiscales 2026</h2>
+              <button class="text-sm font-bold text-brand-gold hover:text-brand-light flex items-center gap-1"><i class="ph-bold ph-download-simple"></i> Descargar Acuses</button>
+            </div>
+            <div id="dash-content-resumen" class="space-y-4"></div>
+          </div>
+          
+          <!-- TAB: Academia (Estudiantes) -->
+          <div id="dash-tab-academia" class="hidden animate-fade-in">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-xl font-bold text-white">Tu Progreso Académico</h2>
+              <button onclick="app.logout()" class="text-sm font-bold text-brand-gold hover:text-brand-light flex items-center gap-1"><i class="ph-bold ph-plus-circle"></i> Comprar más cursos</button>
+            </div>
+            <div id="dash-content-academia" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+          </div>
+          
+          <!-- TAB: Documentos (Ambos) -->
+          <div id="dash-tab-documentos" class="hidden animate-fade-in">
+            <h2 class="text-xl font-bold text-white mb-6">Expediente Digital Segurizado</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="dash-content-documentos"></div>
+          </div>
+
         </div>
       </div>
     </main>
@@ -458,147 +589,192 @@
        MODALES Y WIDGETS (GLOBALES)
        ========================================================================= -->
 
-  <!-- Modal: Catálogo de Cursos -->
+  <!-- Modal: Catálogo de Cursos (Pantalla Completa) -->
   <div id="modal-catalog" class="hidden fixed inset-0 z-[90] bg-brand-dark overflow-y-auto animate-fade-in">
-    <div class="sticky top-0 z-20 bg-brand-card/90 backdrop-blur-xl border-b border-white/10 px-4 py-4 sm:px-8 flex justify-between items-center">
+    <div class="sticky top-0 z-20 glass-nav px-4 py-5 sm:px-8 flex justify-between items-center">
       <div>
-        <h2 class="text-2xl font-bold text-white">Catálogo de Cursos</h2>
+        <h2 class="text-2xl font-bold text-white leading-tight">Catálogo de Capacitación</h2>
         <p class="text-sm text-brand-gold font-medium">Nodo Fiscal Academy</p>
       </div>
-      <button onclick="app.closeCatalogModal()" class="text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 p-2.5 rounded-full transition-colors flex items-center gap-2">
-        <span class="text-sm font-bold hidden sm:inline">Cerrar</span>
+      <button onclick="app.closeCatalogModal()" class="text-slate-400 hover:text-white bg-brand-card border border-brand-border hover:border-white p-3 rounded-full transition-all flex items-center gap-2">
+        <span class="text-sm font-bold hidden sm:inline">Volver</span>
         <i class="ph-bold ph-x text-xl"></i>
       </button>
     </div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div id="catalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         <!-- JS Inject -->
       </div>
     </div>
   </div>
 
   <!-- Modal: Detalles del Curso -->
-  <div id="modal-course" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 bg-brand-dark/90 backdrop-blur-md animate-fade-in">
-    <div class="bg-brand-card border border-brand-gold/30 rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl shadow-brand-gold/10 flex flex-col max-h-[90vh]">
-      <div class="flex justify-between items-center p-4 absolute top-0 right-0 left-0 z-10 bg-gradient-to-b from-black/80 to-transparent">
-        <span id="mc-badge" class="bg-brand-gold text-brand-dark text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Premium</span>
-        <button onclick="app.closeCourseModal()" class="text-white hover:text-brand-gold bg-black/50 hover:bg-black p-2 rounded-full transition-colors">
-          <i class="ph-bold ph-x text-xl"></i>
-        </button>
+  <div id="modal-course" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4 bg-brand-dark/95 backdrop-blur-sm animate-fade-in">
+    <div class="bg-brand-card border border-brand-border rounded-[2rem] w-full max-w-4xl overflow-hidden shadow-[0_20px_50px_rgba(200,151,42,0.15)] flex flex-col max-h-[90vh]">
+      
+      <!-- Video Header -->
+      <div class="w-full relative bg-brand-dark border-b border-brand-border shrink-0 group">
+        <!-- Header Controls Over Video -->
+        <div class="absolute top-4 left-4 right-4 z-20 flex justify-between items-start">
+          <span id="mc-badge" class="bg-brand-gold text-brand-dark text-xs font-black px-3 py-1.5 rounded-md uppercase tracking-widest shadow-lg">Premium</span>
+          <button onclick="app.closeCourseModal()" class="text-white hover:text-brand-gold bg-black/40 backdrop-blur hover:bg-black p-2 rounded-full transition-colors">
+            <i class="ph-bold ph-x text-xl"></i>
+          </button>
+        </div>
+        
+        <!-- Placeholder Cover (Se ajustaría con imagen real del curso) -->
+        <div class="aspect-video sm:aspect-[21/9] flex flex-col items-center justify-center relative overflow-hidden cursor-pointer">
+          <div class="absolute inset-0 bg-gradient-to-tr from-brand-card to-brand-border opacity-50 group-hover:scale-105 transition-transform duration-700"></div>
+          <i class="ph-fill ph-play-circle text-7xl text-white/50 group-hover:text-brand-gold transition-colors z-10 drop-shadow-2xl"></i>
+          <p class="text-white/50 text-sm font-bold mt-4 tracking-widest uppercase z-10 bg-black/40 px-4 py-1 rounded-full backdrop-blur">Ver Trailer Oficial</p>
+        </div>
       </div>
-      <!-- Video Placeholder -->
-      <div class="w-full aspect-video bg-black relative flex flex-col items-center justify-center group cursor-pointer border-b border-white/10 shrink-0 mt-0">
-        <i class="ph-fill ph-play-circle text-6xl text-white/40 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-300"></i>
-        <p class="text-white/30 text-sm font-mono mt-4 tracking-widest uppercase">Video de Introducción</p>
-        <div class="absolute inset-0 border-[3px] border-transparent group-hover:border-brand-gold/50 transition-colors"></div>
-      </div>
-      <div class="p-6 md:p-8 overflow-y-auto">
+
+      <!-- Scrollable Content -->
+      <div class="p-6 md:p-10 overflow-y-auto bg-brand-card">
         <div class="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
           <div>
-            <div id="mc-level" class="text-xs text-brand-gold font-bold uppercase tracking-widest mb-2 border border-brand-gold/30 inline-block px-2 py-1 rounded bg-brand-gold/10">Nivel</div>
-            <h2 id="mc-title" class="text-2xl md:text-3xl font-bold text-white mb-2">Título</h2>
-            <p id="mc-desc" class="text-slate-400 text-base">Desc</p>
+            <div id="mc-level" class="text-xs text-brand-gold font-bold uppercase tracking-widest mb-3 border border-brand-gold/30 inline-block px-3 py-1 rounded-md bg-brand-gold/10">Nivel</div>
+            <h2 id="mc-title" class="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-tight">Título del Curso</h2>
+            <p id="mc-desc" class="text-brand-muted text-lg leading-relaxed">Descripción detallada del curso que engancha al usuario.</p>
           </div>
-          <div id="mc-price-container" class="text-left md:text-right shrink-0">
-            <span class="block text-sm text-slate-400 mb-1">Inversión</span>
-            <span id="mc-price" class="text-3xl font-bold text-brand-light">$0 <span class="text-lg">MXN + IVA</span></span>
-          </div>
-        </div>
-        <!-- Instructor -->
-        <div class="bg-white/5 border border-white/10 rounded-xl p-5 mb-8 flex items-center gap-4">
-          <div id="mc-inst-init" class="w-12 h-12 rounded-full bg-brand-gold/20 flex items-center justify-center text-lg font-bold text-brand-gold">FA</div>
-          <div>
-            <p id="mc-inst-name" class="text-white font-semibold">Nombre</p>
-            <p id="mc-inst-role" class="text-slate-400 text-sm">Rol</p>
+          <div id="mc-price-container" class="text-left md:text-right shrink-0 bg-brand-dark p-4 rounded-2xl border border-brand-border">
+            <span class="block text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Inversión Única</span>
+            <span id="mc-price" class="text-4xl font-black text-brand-light">$0</span>
+            <div class="text-sm font-medium text-slate-500 mt-1">MXN + IVA</div>
           </div>
         </div>
-        <!-- Details -->
-        <h3 class="text-lg font-bold text-white mb-4">¿Qué aprenderás en este curso?</h3>
-        <ul id="mc-details" class="space-y-3 mb-8"></ul>
-        
-        <button id="mc-btn" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark text-lg font-bold hover:shadow-lg hover:shadow-brand-gold/20 transition-all flex justify-center items-center gap-2">
-          <span>Añadir al Carrito</span> <i class="ph-bold ph-caret-right"></i>
-        </button>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="md:col-span-2">
+            <h3 class="text-xl font-bold text-white mb-5 flex items-center gap-2"><i class="ph-fill ph-target text-brand-gold"></i> ¿Qué aprenderás?</h3>
+            <ul id="mc-details" class="space-y-4 mb-8 bg-brand-dark p-6 rounded-2xl border border-brand-border"></ul>
+          </div>
+          
+          <div class="md:col-span-1">
+            <h3 class="text-lg font-bold text-white mb-4">Instructor</h3>
+            <div class="bg-brand-dark border border-brand-border rounded-2xl p-5 text-center">
+              <div id="mc-inst-init" class="w-16 h-16 mx-auto rounded-full bg-brand-gold/20 flex items-center justify-center text-2xl font-bold text-brand-gold mb-3 border border-brand-gold/40">FA</div>
+              <p id="mc-inst-name" class="text-white font-bold text-lg leading-tight">Nombre</p>
+              <p id="mc-inst-role" class="text-brand-gold text-sm font-medium mt-1">Rol</p>
+            </div>
+            
+            <button id="mc-btn" class="w-full mt-6 py-4 rounded-xl bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark text-lg font-extrabold transition-all hover:shadow-[0_0_20px_rgba(200,151,42,0.5)] transform hover:-translate-y-1 flex justify-center items-center gap-2">
+              <span>Inscribirse</span> <i class="ph-bold ph-arrow-right"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Modal: Cotización -->
-  <div id="modal-quote" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-dark/80 backdrop-blur-md animate-fade-in">
-    <div class="bg-brand-card border border-brand-gold/30 rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-2xl shadow-brand-gold/10 relative">
-      <button onclick="app.closeQuoteModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors">
-        <i class="ph-bold ph-x text-2xl"></i>
+  <div id="modal-quote" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-brand-dark/90 backdrop-blur-sm animate-fade-in">
+    <div class="bg-brand-card border border-brand-border rounded-[2rem] w-full max-w-xl p-8 md:p-10 shadow-2xl relative">
+      <button onclick="app.closeQuoteModal()" class="absolute top-6 right-6 text-brand-muted hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors">
+        <i class="ph-bold ph-x text-xl"></i>
       </button>
-      <div class="mb-8">
-        <h2 class="text-2xl font-bold text-white mb-2">Solicitar Cotización</h2>
-        <p class="text-slate-400 text-sm">
-          Estás solicitando información para: <strong id="quote-plan-name" class="text-brand-gold">Plan</strong>
+      
+      <div class="mb-8 text-center">
+        <div class="w-12 h-12 bg-brand-gold/10 text-brand-gold rounded-full flex items-center justify-center mx-auto mb-4 border border-brand-gold/20">
+          <i class="ph-fill ph-paper-plane-tilt text-2xl"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-white mb-2">Comencemos tu Diagnóstico</h2>
+        <p class="text-brand-muted text-sm">
+          Plan seleccionado: <strong id="quote-plan-name" class="text-brand-gold border-b border-brand-gold border-dashed pb-0.5">Plan</strong>
         </p>
       </div>
-      <form onsubmit="app.submitQuote(event)" class="space-y-4">
-        <div class="relative">
-          <i class="ph-fill ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-          <input required type="text" placeholder="Tu Nombre Completo" class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-all" />
-        </div>
-        <div class="relative">
-          <i class="ph-fill ph-buildings absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-          <input required type="text" placeholder="Nombre de tu Empresa / Negocio" class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-all" />
-        </div>
-        <div class="flex gap-4">
-          <div class="relative flex-1">
-            <i class="ph-fill ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-            <input required type="email" placeholder="Correo" class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-all" />
+
+      <form onsubmit="app.submitQuote(event)" class="space-y-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div class="relative">
+            <i class="ph-fill ph-user absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-lg"></i>
+            <input required type="text" placeholder="Tu Nombre Completo" class="w-full bg-brand-dark border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-brand-gold transition-all text-sm" />
           </div>
-          <div class="relative flex-1">
-            <i class="ph-fill ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-            <input required type="tel" placeholder="Teléfono" class="w-full bg-black/20 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white focus:outline-none focus:border-brand-gold transition-all" />
+          <div class="relative">
+            <i class="ph-fill ph-buildings absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-lg"></i>
+            <input required type="text" placeholder="Nombre de tu Negocio" class="w-full bg-brand-dark border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-brand-gold transition-all text-sm" />
+          </div>
+          <div class="relative">
+            <i class="ph-fill ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-lg"></i>
+            <input required type="email" placeholder="Correo Electrónico" class="w-full bg-brand-dark border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-brand-gold transition-all text-sm" />
+          </div>
+          <div class="relative">
+            <i class="ph-fill ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted text-lg"></i>
+            <input required type="tel" placeholder="WhatsApp / Celular" class="w-full bg-brand-dark border border-brand-border rounded-xl pl-12 pr-4 py-3.5 text-white focus:outline-none focus:border-brand-gold transition-all text-sm" />
           </div>
         </div>
+
         <div>
-          <textarea rows="3" required placeholder="Cuéntanos sobre tu carga mensual aproximada..." class="w-full bg-black/20 border border-white/10 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-brand-gold transition-all resize-none"></textarea>
+          <textarea rows="3" required placeholder="Cuéntanos brevemente sobre tu carga de trabajo (ej. número de facturas al mes, si tienes trabajadores, o algún problema con el SAT)..." class="w-full bg-brand-dark border border-brand-border rounded-xl p-4 text-sm text-white focus:outline-none focus:border-brand-gold transition-all resize-none"></textarea>
         </div>
-        <button type="submit" class="w-full py-3.5 mt-2 rounded-xl bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-bold hover:shadow-lg hover:shadow-brand-gold/20 transition-all flex justify-center items-center gap-2">
-          Enviar Solicitud <i class="ph-fill ph-paper-plane-right"></i>
+        
+        <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-extrabold hover:shadow-[0_0_20px_rgba(200,151,42,0.4)] transition-all flex justify-center items-center gap-2 mt-2">
+          Solicitar Cotización Formal <i class="ph-bold ph-arrow-right"></i>
         </button>
+        <p class="text-[10px] text-center text-slate-500 mt-3 uppercase tracking-widest">Tus datos están protegidos y no enviamos spam.</p>
       </form>
     </div>
   </div>
 
-  <!-- Chatbot Widget -->
+  <!-- Chatbot Widget (IA GEMINI) -->
   <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
     <!-- Chat Window -->
-    <div id="chat-window" class="hidden bg-brand-card border border-brand-gold/30 w-[85vw] sm:w-96 rounded-2xl shadow-2xl shadow-brand-gold/10 mb-4 overflow-hidden flex-col animate-slide-up">
-      <div class="bg-gradient-to-r from-brand-gold to-brand-light p-4 flex justify-between items-center text-brand-dark">
-        <div class="flex items-center gap-2 font-bold">
-          <i class="ph-fill ph-robot text-xl"></i>
-          <span>Nodo Fiscal AI</span>
+    <div id="chat-window" class="hidden bg-brand-card border border-brand-border w-[90vw] sm:w-[400px] rounded-3xl shadow-2xl shadow-brand-gold/10 mb-4 overflow-hidden flex-col animate-slide-up">
+      <div class="bg-gradient-to-r from-brand-dark to-brand-card p-4 border-b border-brand-border flex justify-between items-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-brand-gold/5"></div> <!-- Subtle glow overlay -->
+        <div class="flex items-center gap-3 relative z-10">
+          <div class="relative">
+            <div class="w-10 h-10 rounded-full bg-brand-dark border border-brand-gold/50 flex items-center justify-center">
+              <i class="ph-fill ph-robot text-2xl text-brand-gold"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-brand-card"></div>
+          </div>
+          <div>
+            <h3 class="font-bold text-white leading-tight">Asistente Nodo Fiscal</h3>
+            <p class="text-xs text-brand-gold font-medium">IA En línea</p>
+          </div>
         </div>
-        <button onclick="app.toggleChat()" class="hover:bg-brand-dark/10 p-1 rounded-md transition-colors">
+        <button onclick="app.toggleChat()" class="relative z-10 hover:bg-white/10 p-2 rounded-full transition-colors text-brand-muted hover:text-white">
           <i class="ph-bold ph-x text-lg"></i>
         </button>
       </div>
-      <div id="chat-history" class="h-72 overflow-y-auto p-4 bg-brand-dark flex flex-col gap-3 scroll-smooth">
+
+      <div id="chat-history" class="h-[350px] overflow-y-auto p-5 bg-brand-dark flex flex-col gap-4 scroll-smooth">
         <!-- JS Inject: Messages -->
       </div>
-      <form onsubmit="app.handleChatSubmit(event)" class="p-3 bg-brand-card border-t border-white/10 flex gap-2">
-        <input id="chat-input" type="text" placeholder="Escribe tu duda..." class="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold" autocomplete="off" />
-        <button id="chat-submit-btn" type="submit" class="bg-brand-gold hover:bg-brand-light disabled:bg-slate-600 disabled:text-slate-400 text-brand-dark p-2 rounded-lg transition-colors">
-          <i class="ph-fill ph-paper-plane-right text-lg"></i>
+
+      <form onsubmit="app.handleChatSubmit(event)" class="p-3 bg-brand-card border-t border-brand-border flex gap-2 items-center">
+        <input id="chat-input" type="text" placeholder="Escribe un mensaje..." class="flex-1 bg-brand-dark border border-brand-border rounded-full px-4 py-3 text-sm text-white focus:outline-none focus:border-brand-gold transition-colors placeholder:text-slate-600" autocomplete="off" />
+        <button id="chat-submit-btn" type="submit" class="w-12 h-12 rounded-full bg-brand-gold hover:bg-brand-light disabled:bg-slate-800 disabled:text-slate-500 text-brand-dark flex items-center justify-center transition-colors shrink-0">
+          <i class="ph-fill ph-paper-plane-right text-xl"></i>
         </button>
       </form>
     </div>
     
-    <!-- Chat Button -->
-    <button onclick="app.toggleChat()" id="chat-toggle-btn" class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all transform hover:scale-110 bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark shadow-brand-gold/30">
+    <!-- Chat Toggle Button -->
+    <button onclick="app.toggleChat()" id="chat-toggle-btn" class="w-16 h-16 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 transform hover:scale-110 hover:-translate-y-1 bg-gradient-to-br from-brand-gold to-brand-light text-brand-dark shadow-brand-gold/40 border border-brand-light/50">
       <i id="chat-toggle-icon" class="ph-fill ph-chat-teardrop-text text-3xl"></i>
     </button>
   </div>
 
 
   <!-- =========================================================================
-       JAVASCRIPT (LÓGICA DE LA APLICACIÓN)
+       JAVASCRIPT (LÓGICA DE LA APLICACIÓN Y UI)
        ========================================================================= -->
   <script>
+    // --- UI Effects ---
+    window.addEventListener('scroll', () => {
+      const nav = document.getElementById('main-nav');
+      if(window.scrollY > 50) {
+        nav.classList.add('glass-nav');
+        nav.classList.remove('bg-transparent', 'border-transparent');
+      } else {
+        nav.classList.remove('glass-nav');
+        nav.classList.add('bg-transparent', 'border-transparent');
+      }
+    });
+
     // ── Función Helper para llamadas API con Reintentos ───────────────────────
     const fetchWithRetry = async (url, options, retries = 5) => {
       const delays = [1000, 2000, 4000, 8000, 16000];
@@ -620,7 +796,7 @@
         {
           id: 1, user: "valeria.lopez", password: "NF2026", name: "Valeria López", type: "student",
           regime: "Sueldos y Salarios", rfc: "LOVA010101AAA", status: "Al corriente", nextDue: "N/A",
-          declarations: [], documents: ["Constancia de situación fiscal.pdf", "Certificado NIIF (En curso)"],
+          declarations: [], documents: ["Constancia_Situacion_Fiscal.pdf", "Certificado_NIIF_En_Curso.pdf"],
           courses: [
             { title: "Automatización con Python para Contadores", progress: 65, totalHours: 20 },
             { title: "Aplicación Práctica de NIIF", progress: 15, totalHours: 15 }
@@ -628,23 +804,23 @@
         },
         {
           id: 2, user: "empresas.demo", password: "DEMO123", name: "Empresa Demo S.A.", type: "business",
-          regime: "Régimen General", rfc: "EDE010101BBB", status: "Al corriente", nextDue: "17 de mayo, 2026",
+          regime: "Régimen General de Ley", rfc: "EDE010101BBB", status: "Al corriente", nextDue: "17 de mayo, 2026",
           declarations: [
             { period: "Abril 2026", status: "En proceso", amount: "$8,500 MXN" },
             { period: "Marzo 2026", status: "Presentada", amount: "$7,200 MXN" },
           ],
-          documents: ["Estados Financieros Q1.pdf", "Acuse SAT Marzo 2026.pdf", "Opinión Cumplimiento.pdf"],
+          documents: ["Estados_Financieros_Q1.pdf", "Acuse_SAT_Marzo_2026.pdf", "Opinion_Cumplimiento_Positiva.pdf"],
           courses: []
         }
       ],
       courses: [
         { id: "c1", type: "gratis", level: "Básico", title: "Guía de Supervivencia SAT", price: "Gratis", shortDesc: "Aprende a navegar el portal oficial, activar tu buzón tributario y entender tus obligaciones sin miedo.", icon: "ph-book-open", color: "blue", instructor: { name: "Prof. Fernando Álvarez", init: "FA", role: "Socio Fundador" }, details: ["Navegación fluida por el portal del SAT sin errores.", "Activación y manejo del Buzón Tributario.", "Emisión de facturas (CFDI 4.0) paso a paso.", "Lectura de Constancia de Situación Fiscal."] },
-        { id: "c2", type: "gratis", level: "Básico", title: "Fundamentos de NIIF", price: "Gratis", shortDesc: "Aprende los conceptos básicos de las Normas Internacionales para hablar el mismo lenguaje que los corporativos.", icon: "ph-chart-bar", color: "emerald", instructor: { name: "Prof. Emilio Hernandez", init: "EH", role: "Socio Fundador" }, details: ["Introducción a las Normas Internacionales de Información Financiera.", "Diferencias clave entre PCGA locales y NIIF.", "Estructura básica de los 4 estados financieros bajo NIIF.", "Casos de estudio simplificados."] },
-        { id: "c3", type: "premium", level: "Avanzado", title: "Python para Contadores", price: "$2,400", shortDesc: "Automatiza la descarga de XMLs, consolida miles de datos y crea reportes dinámicos olvidándote de copiar y pegar.", icon: "ph-lightning", color: "gold", instructor: { name: "Prof. Critopher Juarez", init: "CJ", role: "Especialista Tech" }, details: ["Lógica de programación básica enfocada en contabilidad.", "Uso de la librería Pandas para análisis masivo de datos.", "Extracción y consolidación automática de miles de archivos XML.", "Creación de scripts para auditoría de bases de datos."] },
+        { id: "c2", type: "gratis", level: "Básico", title: "Fundamentos de NIIF", price: "Gratis", shortDesc: "Aprende los conceptos básicos de las Normas Internacionales para hablar el mismo lenguaje que los corporativos.", icon: "ph-chart-line-up", color: "emerald", instructor: { name: "Prof. Emilio Hernandez", init: "EH", role: "Socio Fundador" }, details: ["Introducción a las Normas Internacionales de Información Financiera.", "Diferencias clave entre PCGA locales y NIIF.", "Estructura básica de los 4 estados financieros bajo NIIF.", "Casos de estudio simplificados."] },
+        { id: "c3", type: "premium", level: "Avanzado", title: "Python para Contadores", price: "$2,400", shortDesc: "Automatiza la descarga de XMLs, consolida miles de datos y crea reportes dinámicos olvidándote de copiar y pegar.", icon: "ph-file-code", color: "gold", instructor: { name: "Prof. Critopher Juarez", init: "CJ", role: "Especialista Tech" }, details: ["Lógica de programación básica enfocada en contabilidad.", "Uso de la librería Pandas para análisis masivo de datos.", "Extracción y consolidación automática de miles de archivos XML.", "Creación de scripts para auditoría de bases de datos."] },
         { id: "c4", type: "premium", level: "Avanzado", title: "Máster de NIIF Práctico", price: "$5,000", shortDesc: "Estructuración, valuación y troubleshooting contable. Casos reales aplicados a empresas transnacionales.", icon: "ph-star", color: "gold", instructor: { name: "Prof. Haziel Oliva", init: "HO", role: "Auditor Financiero" }, details: ["Aplicación práctica de NIIF 15 (Ingresos) y NIIF 16 (Arrendamientos).", "Reconocimiento y medición de activos y pasivos financieros.", "Troubleshooting y ajustes de auditoría.", "Proyecto final: Conversión de estados financieros a estándares globales."] },
         { id: "c5", type: "gratis", level: "Básico", title: "Contabilidad para Emprendedores", price: "Gratis", shortDesc: "Conceptos básicos para dueños de negocios: ingresos, deducciones y cómo organizar tus números.", icon: "ph-compass", color: "blue", instructor: { name: "Prof. Fernando Álvarez", init: "FA", role: "Socio Fundador" }, details: ["Diferencia entre ingresos fiscales y financieros.", "Qué es una deducción autorizada y cómo aprovecharla.", "Organización de tickets y facturas.", "Lectura básica de un Estado de Resultados."] },
         { id: "c6", type: "premium", level: "Intermedio", title: "Dominio de CONTPAQi", price: "$1,800", shortDesc: "Domina el sistema contable líder en México. Aprende a crear pólizas dinámicas, procesos de cierre y reporteo.", icon: "ph-database", color: "gold", instructor: { name: "Prof. Emilio Hernandez", init: "EH", role: "Socio Fundador" }, details: ["Configuración inicial y catálogo de cuentas.", "Carga batch y contabilización automática de XML.", "Conciliación bancaria y emisión de DIOT.", "Cierre de ejercicio y pólizas de ajuste."] },
-        { id: "c7", type: "premium", level: "Intermedio", title: "Plataformas Digitales & RESICO", price: "$800", shortDesc: "Especialízate en la tributación de Uber, Mercado Libre, Airbnb y el Régimen Simplificado de Confianza.", icon: "ph-file-text", color: "gold", instructor: { name: "Prof. Haziel Oliva", init: "HO", role: "Auditor Financiero" }, details: ["Leyes aplicables a plataformas tecnológicas.", "Cálculo de retenciones ISR e IVA.", "Migración y requisitos de permanencia en RESICO.", "Casos prácticos de declaración mensual."] },
+        { id: "c7", type: "premium", level: "Intermedio", title: "Plataformas Digitales & RESICO", price: "$800", shortDesc: "Especialízate en la tributación de Uber, Mercado Libre, Airbnb y el Régimen Simplificado de Confianza.", icon: "ph-device-mobile", color: "gold", instructor: { name: "Prof. Haziel Oliva", init: "HO", role: "Auditor Financiero" }, details: ["Leyes aplicables a plataformas tecnológicas.", "Cálculo de retenciones ISR e IVA.", "Migración y requisitos de permanencia en RESICO.", "Casos prácticos de declaración mensual."] },
         { id: "c8", type: "premium", level: "Avanzado", title: "Auditoría Forense con SQL", price: "$3,500", shortDesc: "Aprende a interrogar bases de datos contables masivas usando SQL para detectar fraudes o inconsistencias.", icon: "ph-magnifying-glass", color: "gold", instructor: { name: "Prof. Critopher Juarez", init: "CJ", role: "Especialista Tech" }, details: ["Fundamentos de bases de datos relacionales.", "Queries en SQL enfocados a revisión de pólizas.", "Cruce de información XML vs Registros Contables.", "Técnicas de detección de partidas atípicas (Forensic)."] }
       ],
       planesFisicas: [
@@ -676,7 +852,7 @@
       currentUser: null,
       pricingCategory: 'fisicas',
       chatHistory: [
-        { role: "bot", text: "¡Hola! Soy la Inteligencia Artificial de Nodo Fiscal 🤖. Fui entrenada para responder tus dudas sobre contabilidad, nuestros planes o la academia. ¿En qué te puedo ayudar hoy?" }
+        { role: "bot", text: "¡Hola! Soy la Inteligencia Artificial de Nodo Fiscal 🤖. Fui entrenada para responder tus dudas sobre nuestros servicios contables o la academia. ¿En qué te puedo ayudar hoy?" }
       ],
       isBotTyping: false,
       
@@ -690,26 +866,36 @@
 
       // --- NAVEGACIÓN ---
       navigate(viewId) {
-        window.scrollTo(0,0);
         document.getElementById('view-landing').classList.add('hidden');
         document.getElementById('view-login').classList.add('hidden');
         document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById(`view-${viewId}`).classList.remove('hidden');
-
+        
+        const view = document.getElementById(`view-${viewId}`);
+        view.classList.remove('hidden');
+        
         if (viewId === 'dashboard' && this.currentUser) {
           this.setupDashboard();
+        } else if (viewId === 'landing') {
+          // Scroll al inicio de la página suavemente
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        } else {
+          window.scrollTo(0,0);
         }
       },
       
       toggleMobileMenu() {
         const menu = document.getElementById('mobile-menu');
         const icon = document.getElementById('mobile-menu-icon');
+        const nav = document.getElementById('main-nav');
+
         if (menu.classList.contains('hidden')) {
           menu.classList.remove('hidden');
           icon.className = "ph-bold ph-x text-3xl";
+          nav.classList.add('glass-nav');
         } else {
           menu.classList.add('hidden');
           icon.className = "ph-bold ph-list text-3xl";
+          if(window.scrollY <= 50) nav.classList.remove('glass-nav');
         }
       },
 
@@ -719,10 +905,10 @@
         const icon = document.getElementById('login-eye-icon');
         if (input.type === 'password') {
           input.type = 'text';
-          icon.className = "ph-fill ph-eye-slash text-lg";
+          icon.className = "ph-fill ph-eye-slash text-xl text-brand-gold";
         } else {
           input.type = 'password';
-          icon.className = "ph-fill ph-eye text-lg";
+          icon.className = "ph-fill ph-eye text-xl text-brand-muted hover:text-white transition-colors";
         }
       },
 
@@ -734,7 +920,7 @@
         const err = document.getElementById('login-error');
         
         err.classList.add('hidden');
-        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin-slow text-xl"></i>';
+        btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin-slow text-2xl"></i>';
         btn.disabled = true;
 
         setTimeout(() => {
@@ -747,9 +933,9 @@
           } else {
             err.classList.remove('hidden');
           }
-          btn.innerHTML = '<span>Ingresar</span>';
+          btn.innerHTML = '<span>Ingresar Seguramente</span> <i class="ph-bold ph-arrow-right"></i>';
           btn.disabled = false;
-        }, 1000);
+        }, 1200);
       },
 
       logout() {
@@ -762,6 +948,8 @@
         const u = this.currentUser;
         document.getElementById('dash-user-init').innerText = u.name.charAt(0);
         document.getElementById('dash-user-name').innerText = u.name;
+        document.getElementById('dash-user-type').innerText = u.type === 'business' ? 'Perfil Empresarial' : 'Estudiante Academy';
+        
         document.getElementById('dash-welcome-name').innerText = u.name.split(' ')[0];
         document.getElementById('dash-welcome-desc').innerText = u.type === 'student' 
           ? "Continúa con tu preparación hacia el nivel corporativo." 
@@ -777,18 +965,19 @@
         const tabsContainer = document.getElementById('dash-tabs-container');
         let tabsHTML = '';
         if (u.type === 'business') {
-          tabsHTML += `<button onclick="app.setDashboardTab('resumen')" class="dash-tab-btn px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors border-brand-gold text-brand-gold" data-target="resumen">Declaraciones</button>`;
+          tabsHTML += `<button onclick="app.setDashboardTab('resumen')" class="dash-tab-btn px-6 py-4 text-sm font-bold border-b-[3px] rounded-t-xl transition-colors border-brand-gold text-brand-gold bg-white/5" data-target="resumen"><i class="ph-fill ph-file-text mr-2 text-lg"></i> Declaraciones</button>`;
         }
         if (u.type === 'student') {
-          tabsHTML += `<button onclick="app.setDashboardTab('academia')" class="dash-tab-btn px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${u.type === 'student' ? 'border-brand-gold text-brand-gold' : 'border-transparent text-slate-400 hover:text-slate-200'}" data-target="academia">Mis Cursos</button>`;
+          tabsHTML += `<button onclick="app.setDashboardTab('academia')" class="dash-tab-btn px-6 py-4 text-sm font-bold border-b-[3px] rounded-t-xl transition-colors ${u.type === 'student' ? 'border-brand-gold text-brand-gold bg-white/5' : 'border-transparent text-brand-muted hover:text-white hover:bg-white/5'}" data-target="academia"><i class="ph-fill ph-graduation-cap mr-2 text-lg"></i> Mis Cursos</button>`;
         }
-        tabsHTML += `<button onclick="app.setDashboardTab('documentos')" class="dash-tab-btn px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors border-transparent text-slate-400 hover:text-slate-200" data-target="documentos">Documentos</button>`;
+        tabsHTML += `<button onclick="app.setDashboardTab('documentos')" class="dash-tab-btn px-6 py-4 text-sm font-bold border-b-[3px] rounded-t-xl transition-colors border-transparent text-brand-muted hover:text-white hover:bg-white/5" data-target="documentos"><i class="ph-fill ph-folder mr-2 text-lg"></i> Archivos</button>`;
         tabsContainer.innerHTML = tabsHTML;
 
         // Reset views
         document.getElementById('dash-tab-resumen').classList.add('hidden');
         document.getElementById('dash-tab-academia').classList.add('hidden');
         document.getElementById('dash-tab-documentos').classList.add('hidden');
+        
         if(u.type === 'business') {
           this.setDashboardTab('resumen');
           this.renderDashResumen();
@@ -802,32 +991,37 @@
       setDashboardTab(tabId) {
         document.querySelectorAll('.dash-tab-btn').forEach(btn => {
           if (btn.dataset.target === tabId) {
-            btn.className = "dash-tab-btn px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors border-brand-gold text-brand-gold";
+            btn.className = "dash-tab-btn px-6 py-4 text-sm font-bold border-b-[3px] rounded-t-xl transition-colors border-brand-gold text-brand-gold bg-white/5";
           } else {
-            btn.className = "dash-tab-btn px-6 py-3 text-sm font-medium border-b-2 whitespace-nowrap transition-colors border-transparent text-slate-400 hover:text-slate-200";
+            btn.className = "dash-tab-btn px-6 py-4 text-sm font-bold border-b-[3px] rounded-t-xl transition-colors border-transparent text-brand-muted hover:text-white hover:bg-white/5";
           }
         });
         document.getElementById('dash-tab-resumen').classList.add('hidden');
         document.getElementById('dash-tab-academia').classList.add('hidden');
         document.getElementById('dash-tab-documentos').classList.add('hidden');
+        
         document.getElementById(`dash-tab-${tabId}`).classList.remove('hidden');
       },
 
       renderDashResumen() {
+        if(!this.currentUser.declarations || this.currentUser.declarations.length === 0) return;
         const html = this.currentUser.declarations.map(dec => `
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5 gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-brand-dark rounded-2xl border border-brand-border gap-4 hover:border-brand-gold/30 transition-colors">
             <div class="flex items-center gap-4">
-              <div class="w-10 h-10 rounded-lg bg-brand-gold/10 text-brand-gold flex items-center justify-center">
-                <i class="ph-fill ph-file-text text-xl"></i>
+              <div class="w-12 h-12 rounded-xl bg-brand-gold/10 text-brand-gold flex items-center justify-center border border-brand-gold/20">
+                <i class="ph-fill ph-file-pdf text-2xl"></i>
               </div>
               <div>
-                <div class="font-bold text-white">${dec.period}</div>
-                <div class="text-sm text-slate-400">Declaración Mensual</div>
+                <div class="font-bold text-white text-lg">${dec.period}</div>
+                <div class="text-sm text-brand-muted">Declaración Provisional Mensual</div>
               </div>
             </div>
             <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-              <span class="font-mono text-white font-medium">${dec.amount}</span>
-              <span class="px-3 py-1 rounded-full text-xs font-bold ${dec.status === 'Presentada' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}">${dec.status}</span>
+              <div class="text-right">
+                <span class="block text-xs text-brand-muted uppercase tracking-wider font-bold">Importe</span>
+                <span class="font-mono text-white font-bold text-lg">${dec.amount}</span>
+              </div>
+              <span class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${dec.status === 'Presentada' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'}">${dec.status}</span>
             </div>
           </div>
         `).join('');
@@ -835,19 +1029,28 @@
       },
 
       renderDashAcademia() {
+        if(!this.currentUser.courses || this.currentUser.courses.length === 0) return;
         const html = this.currentUser.courses.map(c => `
-          <div class="bg-black/20 border border-white/5 rounded-xl p-5 hover:border-brand-gold/30 transition-colors group cursor-pointer">
-            <div class="flex justify-between items-start mb-4">
-              <div class="w-10 h-10 rounded-lg bg-brand-gold/10 text-brand-gold flex items-center justify-center">
-                <i class="ph-fill ph-play-circle text-xl"></i>
+          <div class="bg-brand-dark border border-brand-border rounded-2xl p-6 hover:border-brand-gold/50 transition-colors group cursor-pointer shadow-lg relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-24 h-24 bg-brand-gold/5 rounded-full blur-[30px] group-hover:bg-brand-gold/20 transition-all"></div>
+            
+            <div class="flex justify-between items-start mb-5 relative z-10">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-gold to-brand-light text-brand-dark flex items-center justify-center shadow-lg">
+                <i class="ph-fill ph-play text-xl"></i>
               </div>
-              <span class="text-xs font-medium text-slate-400 bg-white/5 px-2 py-1 rounded-md">${c.totalHours} hrs</span>
+              <span class="text-xs font-bold text-brand-gold bg-brand-gold/10 border border-brand-gold/20 px-3 py-1 rounded-md tracking-wider">${c.totalHours} hrs</span>
             </div>
-            <h3 class="font-bold text-white mb-4 group-hover:text-brand-gold transition-colors">${c.title}</h3>
-            <div>
-              <div class="flex justify-between text-xs text-slate-400 mb-2"><span>Progreso</span><span>${c.progress}%</span></div>
-              <div class="w-full bg-slate-800 rounded-full h-2">
-                <div class="bg-gradient-to-r from-brand-gold to-brand-light h-2 rounded-full" style="width: ${c.progress}%"></div>
+            
+            <h3 class="font-bold text-xl text-white mb-6 group-hover:text-brand-light transition-colors relative z-10 leading-tight">${c.title}</h3>
+            
+            <div class="relative z-10">
+              <div class="flex justify-between text-xs font-bold text-brand-muted mb-2 uppercase tracking-widest">
+                <span>Progreso</span><span>${c.progress}%</span>
+              </div>
+              <div class="w-full bg-brand-card rounded-full h-2.5 border border-white/5 overflow-hidden">
+                <div class="bg-gradient-to-r from-brand-gold to-brand-light h-full rounded-full relative" style="width: ${c.progress}%">
+                  <div class="absolute top-0 right-0 bottom-0 left-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[length:20px_20px] animate-scroll"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -856,14 +1059,17 @@
       },
 
       renderDashDocs() {
+        if(!this.currentUser.documents || this.currentUser.documents.length === 0) return;
         const html = this.currentUser.documents.map(doc => `
-          <div class="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5 group hover:border-brand-gold/20">
-            <div class="flex items-center gap-3">
-              <i class="ph-fill ph-file-text text-lg text-brand-gold"></i>
-              <span class="text-sm font-medium text-slate-200">${doc}</span>
+          <div class="flex items-center justify-between p-5 bg-brand-dark rounded-2xl border border-brand-border group hover:border-brand-gold/40 transition-colors shadow-sm cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 bg-brand-card rounded-lg flex items-center justify-center border border-white/5">
+                <i class="ph-fill ph-file-pdf text-2xl text-red-400"></i>
+              </div>
+              <span class="text-sm font-bold text-slate-200 group-hover:text-white transition-colors truncate max-w-[200px] sm:max-w-xs">${doc}</span>
             </div>
-            <button class="text-slate-400 hover:text-brand-gold flex items-center gap-2 text-sm font-medium opacity-0 group-hover:opacity-100 transition-all">
-              <i class="ph-bold ph-download"></i> <span class="hidden sm:inline">Descargar</span>
+            <button class="w-10 h-10 rounded-full bg-brand-card border border-white/5 text-brand-muted group-hover:text-brand-dark group-hover:bg-brand-gold transition-all flex items-center justify-center shrink-0">
+              <i class="ph-bold ph-download-simple text-lg"></i>
             </button>
           </div>
         `).join('');
@@ -873,13 +1079,12 @@
       // --- EMPRESAS (MARQUEE) RENDERING ---
       renderCompaniesMarquee() {
         const html = DB.companies.map(comp => `
-          <div class="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105 mx-4">
-            <i class="ph-fill ${comp.icon} text-4xl sm:text-5xl ${comp.color}"></i>
-            <span class="text-xl sm:text-2xl font-bold text-slate-300 group-hover:text-white transition-colors">${comp.name}</span>
+          <div class="flex items-center gap-3 group cursor-pointer mx-8">
+            <i class="ph-fill ${comp.icon} text-4xl sm:text-5xl ${comp.color} filter drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
+            <span class="text-2xl font-black text-slate-500 group-hover:text-white transition-colors tracking-tighter">${comp.name}</span>
           </div>
         `).join('');
         
-        // Inyectamos el mismo contenido en ambas pistas para el efecto infinito
         document.getElementById('marquee-track-1').innerHTML = html;
         document.getElementById('marquee-track-2').innerHTML = html;
       },
@@ -887,31 +1092,43 @@
       // --- PLANES Y CURSOS RENDERING ---
       setPricingCategory(cat) {
         this.pricingCategory = cat;
-        document.getElementById('btn-toggle-fisicas').className = `px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${cat === 'fisicas' ? 'bg-brand-gold text-brand-dark shadow-md' : 'text-slate-400 hover:text-white'}`;
-        document.getElementById('btn-toggle-empresas').className = `px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${cat === 'empresas' ? 'bg-brand-gold text-brand-dark shadow-md' : 'text-slate-400 hover:text-white'}`;
+        document.getElementById('btn-toggle-fisicas').className = `px-8 py-3 rounded-full text-sm font-bold transition-all ${cat === 'fisicas' ? 'bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark shadow-lg shadow-brand-gold/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`;
+        document.getElementById('btn-toggle-empresas').className = `px-8 py-3 rounded-full text-sm font-bold transition-all ${cat === 'empresas' ? 'bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark shadow-lg shadow-brand-gold/20' : 'text-slate-400 hover:text-white hover:bg-white/5'}`;
         this.renderPlanes();
       },
 
       renderPlanes() {
         const planes = this.pricingCategory === 'fisicas' ? DB.planesFisicas : DB.planesEmpresas;
         const html = planes.map(plan => `
-          <div class="border-2 rounded-3xl p-8 flex flex-col relative transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-gold/10 ${plan.popular ? 'bg-gradient-to-b from-[#1a1505] to-brand-dark border-brand-gold z-10' : 'bg-brand-dark border-white/10 hover:border-brand-gold/30'}">
-            ${plan.popular ? `<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand-gold text-brand-dark font-bold text-[10px] uppercase tracking-wider px-4 py-1.5 rounded-full">Más Popular</div>` : ''}
-            <h3 class="text-xl font-bold text-white mb-2">${plan.name}</h3>
-            <p class="text-slate-400 text-sm mb-6 min-h-[40px]">${plan.ideal}</p>
-            <div class="mb-6 border-b border-white/10 pb-6">
-              ${plan.price !== "A medida" ? '<span class="text-slate-400 text-sm font-medium mr-1">Desde</span>' : ''}
-              <span class="text-4xl font-bold ${plan.popular ? 'text-brand-light' : 'text-white'}">${plan.price}</span>
-              ${plan.price !== "A medida" ? '<span class="text-slate-400 text-sm"> / mes + IVA</span>' : ''}
+          <div class="bg-brand-dark rounded-[2rem] p-8 md:p-10 flex flex-col relative transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_20px_40px_rgba(200,151,42,0.1)] border-2 ${plan.popular ? 'border-brand-gold transform md:-translate-y-2' : 'border-brand-border hover:border-brand-gold/50'}">
+            ${plan.popular ? `<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-black text-xs uppercase tracking-widest px-5 py-2 rounded-full shadow-lg">Más Popular</div>` : ''}
+            
+            <h3 class="text-2xl font-extrabold text-white mb-3 text-center">${plan.name}</h3>
+            <p class="text-brand-muted text-sm mb-8 text-center min-h-[40px] leading-relaxed">${plan.ideal}</p>
+            
+            <div class="mb-8 border-b border-brand-border pb-8 text-center bg-brand-card/50 rounded-2xl p-4">
+              ${plan.price !== "A medida" ? '<span class="block text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Inversión Mensual</span>' : ''}
+              <span class="text-4xl md:text-5xl font-black ${plan.popular ? 'text-brand-light' : 'text-white'}">${plan.price}</span>
+              ${plan.price !== "A medida" ? '<span class="block text-brand-muted text-sm font-medium mt-1">+ IVA</span>' : ''}
             </div>
-            <ul class="space-y-4 mb-6 flex-1">
-              ${plan.features.map(f => `<li class="flex items-start gap-3 text-slate-300 text-sm"><i class="ph-bold ph-check text-brand-gold mt-0.5 shrink-0"></i><span class="leading-tight">${f}</span></li>`).join('')}
+            
+            <ul class="space-y-5 mb-8 flex-1">
+              ${plan.features.map(f => `
+                <li class="flex items-start gap-4 text-slate-300 text-sm">
+                  <div class="w-6 h-6 rounded-full bg-brand-gold/10 flex items-center justify-center shrink-0 border border-brand-gold/30 mt-0.5">
+                    <i class="ph-bold ph-check text-brand-gold text-xs"></i>
+                  </div>
+                  <span class="leading-relaxed font-medium">${f}</span>
+                </li>`).join('')}
             </ul>
-            <div class="${plan.popular ? 'bg-brand-gold/10 border-brand-gold/20 text-brand-text' : 'bg-white/5 text-slate-400'} rounded-lg p-3 mb-6 border border-transparent">
-              <p class="text-[11px] leading-tight">* El precio final se ajusta tras evaluar tu volumen operativo, carga contable y tamaño de nómina.</p>
+            
+            <div class="bg-brand-card rounded-xl p-4 mb-8 border border-brand-border text-center">
+              <i class="ph-fill ph-info text-brand-gold mb-1 text-lg"></i>
+              <p class="text-[11px] leading-relaxed text-brand-muted font-medium">* El precio se ajusta de forma personalizada tras una evaluación de tu carga contable y volumen de nómina.</p>
             </div>
-            <button onclick="app.openQuoteModal('${plan.name}')" class="w-full py-3 rounded-xl font-bold transition-all ${plan.popular ? 'bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark hover:shadow-lg hover:shadow-brand-gold/20' : 'border border-brand-gold/40 text-brand-text hover:bg-brand-gold/10'}">
-              ${plan.price === "A medida" ? "Cotizar Proyecto" : "Solicitar Diagnóstico"}
+            
+            <button onclick="app.openQuoteModal('${plan.name}')" class="w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${plan.popular ? 'bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark hover:shadow-[0_0_20px_rgba(200,151,42,0.4)] transform hover:-translate-y-1' : 'bg-transparent border border-brand-border text-white hover:bg-brand-gold/10 hover:border-brand-gold'}">
+              ${plan.price === "A medida" ? "Cotizar Proyecto" : "Solicitar Diagnóstico"} <i class="ph-bold ph-arrow-right"></i>
             </button>
           </div>
         `).join('');
@@ -925,33 +1142,42 @@
 
       createCourseCardHTML(c) {
         const isPremium = c.type === "premium";
-        const bgHeader = isPremium ? "bg-gradient-to-b from-brand-gold/10 to-transparent border border-brand-gold/30" : (c.color === "blue" ? "bg-white/5 border border-white/10 hover:border-blue-500/30" : "bg-white/5 border border-white/10 hover:border-emerald-500/30");
-        const headerColor = isPremium ? "bg-brand-gold/20 text-brand-gold border-brand-gold/30" : "bg-green-500/20 text-green-400 border-green-500/30";
-        const iconClass = isPremium ? "text-brand-gold" : (c.color === "blue" ? "text-blue-400" : "text-emerald-400");
-        const btnClass = isPremium ? "bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-bold hover:shadow-lg hover:shadow-brand-gold/20" : "bg-white/10 text-white font-medium hover:bg-white/20";
-        const gradientBg = isPremium ? '' : (c.color === 'blue' ? 'bg-gradient-to-br from-blue-900/50 to-blue-600/20' : 'bg-gradient-to-br from-emerald-900/50 to-emerald-600/20');
-        const instColors = isPremium ? "bg-brand-gold/20 text-brand-gold" : (c.color === 'blue' ? 'bg-blue-900/50 text-blue-400' : 'bg-emerald-900/50 text-emerald-400');
+        const bgContainer = "bg-brand-dark border border-brand-border hover:border-brand-gold/50";
+        const badgeColor = isPremium ? "bg-brand-gold text-brand-dark shadow-[0_0_10px_rgba(200,151,42,0.5)]" : "bg-white text-brand-dark";
+        const iconContainer = isPremium ? "bg-gradient-to-br from-brand-gold to-brand-light text-brand-dark" : (c.color === "blue" ? "bg-gradient-to-br from-blue-500 to-blue-300 text-brand-dark" : "bg-gradient-to-br from-emerald-500 to-emerald-300 text-brand-dark");
+        const btnClass = isPremium ? "bg-gradient-to-r from-brand-gold to-brand-light text-brand-dark font-extrabold hover:shadow-[0_0_15px_rgba(200,151,42,0.4)]" : "bg-brand-card border border-brand-border text-white hover:bg-white/10";
 
         return `
-          <div class="${bgHeader} rounded-2xl overflow-hidden hover:border-brand-gold/50 transition-all flex flex-col relative group">
-            ${isPremium ? '<div class="absolute top-0 right-0 w-24 h-24 bg-brand-gold/20 blur-3xl group-hover:bg-brand-gold/40 transition-colors"></div>' : ''}
-            <div class="h-32 p-6 flex items-end relative ${gradientBg}">
-              <div class="absolute top-4 left-1/2 -translate-x-1/2 bg-black/40 text-slate-300 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider backdrop-blur-md">Nivel: ${c.level}</div>
-              <div class="absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full border ${headerColor}">${isPremium ? 'Premium' : 'Gratis'}</div>
-              <i class="ph-fill ${c.icon} ${iconClass} text-4xl absolute top-4 left-4 opacity-50"></i>
-              <h3 class="text-lg font-bold text-white relative z-10 leading-tight">${c.title}</h3>
+          <div class="${bgContainer} rounded-[2rem] overflow-hidden transition-all duration-500 flex flex-col relative group hover:-translate-y-2 hover:shadow-2xl">
+            <!-- Glow background on hover -->
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-gold/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+            
+            <div class="p-8 flex flex-col items-center text-center relative border-b border-brand-border bg-brand-card/50">
+              <div class="absolute top-4 left-4 text-[10px] font-black uppercase tracking-widest text-slate-500 bg-brand-dark px-2 py-1 rounded border border-brand-border">Nivel ${c.level}</div>
+              <div class="absolute top-4 right-4 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${badgeColor}">${isPremium ? 'Premium' : 'Gratis'}</div>
+              
+              <div class="w-20 h-20 rounded-2xl ${iconContainer} flex items-center justify-center mt-6 mb-5 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                <i class="ph-fill ${c.icon} text-4xl"></i>
+              </div>
+              <h3 class="text-xl font-extrabold text-white leading-tight">${c.title}</h3>
             </div>
-            <div class="p-6 flex-1 flex flex-col relative z-10">
-              ${isPremium ? `<div class="text-2xl font-bold text-brand-light mb-3">${c.price} <span class="text-sm font-normal text-slate-400">MXN + IVA</span></div>` : ''}
-              <p class="text-sm text-slate-400 mb-4 flex-1">${c.shortDesc}</p>
-              <div class="flex items-center gap-3 mb-6 pt-4 border-t ${isPremium ? 'border-brand-gold/20' : 'border-white/5'}">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${instColors}">${c.instructor.init}</div>
-                <div class="flex flex-col">
-                  <span class="text-xs font-semibold text-slate-300">${c.instructor.name}</span>
-                  <span class="text-[10px] text-slate-500">${c.instructor.role}</span>
+            
+            <div class="p-6 md:p-8 flex-1 flex flex-col relative z-10 bg-brand-dark">
+              ${isPremium ? `<div class="text-2xl font-black text-brand-light mb-4 text-center">${c.price} <span class="text-xs uppercase tracking-widest font-bold text-brand-muted">MXN + IVA</span></div>` : '<div class="h-11"></div>'}
+              
+              <p class="text-sm text-brand-muted mb-6 flex-1 text-center leading-relaxed">${c.shortDesc}</p>
+              
+              <div class="bg-brand-card rounded-xl p-3 flex items-center justify-center gap-3 mb-6 border border-brand-border">
+                <div class="w-8 h-8 rounded-full bg-brand-dark flex items-center justify-center text-xs font-bold text-white border border-brand-border">${c.instructor.init}</div>
+                <div class="text-left">
+                  <div class="text-xs font-bold text-white leading-none">${c.instructor.name}</div>
+                  <div class="text-[10px] text-brand-gold uppercase tracking-wider font-semibold mt-1">${c.instructor.role}</div>
                 </div>
               </div>
-              <button onclick="app.openCourseModal('${c.id}')" class="w-full py-2.5 rounded-xl transition-all ${btnClass}">Ver Detalles</button>
+              
+              <button onclick="app.openCourseModal('${c.id}')" class="w-full py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 ${btnClass}">
+                Ver Detalles <i class="ph-bold ph-arrow-right"></i>
+              </button>
             </div>
           </div>
         `;
@@ -981,7 +1207,11 @@
         const c = DB.courses.find(x => x.id === id);
         if (!c) return;
         
-        document.getElementById('mc-badge').innerText = c.type === 'gratis' ? 'Curso Gratuito' : 'Curso Premium';
+        document.getElementById('mc-badge').innerText = c.type === 'gratis' ? 'Gratis' : 'Premium';
+        document.getElementById('mc-badge').className = c.type === 'gratis' 
+          ? "bg-white text-brand-dark text-xs font-black px-3 py-1.5 rounded-md uppercase tracking-widest shadow-lg"
+          : "bg-brand-gold text-brand-dark text-xs font-black px-3 py-1.5 rounded-md uppercase tracking-widest shadow-lg";
+        
         document.getElementById('mc-level').innerText = `Nivel ${c.level}`;
         document.getElementById('mc-title').innerText = c.title;
         document.getElementById('mc-desc').innerText = c.shortDesc;
@@ -989,7 +1219,7 @@
         const pContainer = document.getElementById('mc-price-container');
         if(c.type === 'premium') {
           pContainer.style.display = 'block';
-          document.getElementById('mc-price').innerHTML = `${c.price} <span class="text-lg">MXN + IVA</span>`;
+          document.getElementById('mc-price').innerText = c.price;
         } else {
           pContainer.style.display = 'none';
         }
@@ -998,14 +1228,20 @@
         document.getElementById('mc-inst-name').innerText = c.instructor.name;
         document.getElementById('mc-inst-role').innerText = c.instructor.role;
 
-        const detailsHtml = c.details.map(d => `<li class="flex items-start gap-3 text-slate-300"><i class="ph-fill ph-check-circle text-brand-gold mt-0.5 shrink-0 text-xl"></i><span>${d}</span></li>`).join('');
+        const detailsHtml = c.details.map(d => `
+          <li class="flex items-start gap-4">
+            <div class="w-6 h-6 rounded-full bg-brand-gold/10 flex items-center justify-center shrink-0 border border-brand-gold/30 mt-0.5">
+              <i class="ph-bold ph-check text-brand-gold text-xs"></i>
+            </div>
+            <span class="text-slate-200 font-medium leading-relaxed">${d}</span>
+          </li>`).join('');
         document.getElementById('mc-details').innerHTML = detailsHtml;
 
         const btn = document.getElementById('mc-btn');
         if(c.type === 'gratis') {
-          btn.innerHTML = '<span>Inscribirme Gratis</span> <i class="ph-bold ph-caret-right text-lg"></i>';
+          btn.innerHTML = '<span>Comenzar Ahora</span> <i class="ph-bold ph-arrow-right text-xl"></i>';
         } else {
-          btn.innerHTML = '<span>Añadir al Carrito</span> <i class="ph-bold ph-caret-right text-lg"></i>';
+          btn.innerHTML = '<span>Inscribirse y Pagar</span> <i class="ph-bold ph-arrow-right text-xl"></i>';
         }
 
         document.getElementById('modal-course').classList.remove('hidden');
@@ -1023,7 +1259,7 @@
       },
       submitQuote(e) {
         e.preventDefault();
-        alert("¡Cotización enviada con éxito! Un asesor se contactará contigo.");
+        alert("¡Cotización enviada con éxito! Un asesor de Nodo Fiscal se contactará contigo en las próximas 24 horas.");
         this.closeQuoteModal();
       },
 
@@ -1032,41 +1268,63 @@
         const win = document.getElementById('chat-window');
         const icon = document.getElementById('chat-toggle-icon');
         const btn = document.getElementById('chat-toggle-btn');
+        
         if (win.classList.contains('hidden')) {
           win.classList.remove('hidden');
           icon.className = "ph-bold ph-x text-3xl";
-          btn.classList.replace('bg-gradient-to-r', 'bg-white/10');
-          btn.classList.replace('text-brand-dark', 'text-white');
-          // Forzamos el scroll hacia abajo al abrir
+          btn.classList.add('rotate-90'); // Animación extra
+          
           setTimeout(() => {
+            btn.classList.remove('rotate-90');
             const cont = document.getElementById('chat-history');
             cont.scrollTop = cont.scrollHeight;
-          }, 50);
+          }, 300);
         } else {
           win.classList.add('hidden');
           icon.className = "ph-fill ph-chat-teardrop-text text-3xl";
-          btn.classList.replace('bg-white/10', 'bg-gradient-to-r');
-          btn.classList.replace('text-white', 'text-brand-dark');
+          btn.classList.add('-rotate-90');
+          setTimeout(() => btn.classList.remove('-rotate-90'), 300);
         }
       },
 
       renderChatHistory() {
         const cont = document.getElementById('chat-history');
-        let html = this.chatHistory.map(msg => `
-          <div class="max-w-[85%] p-3 rounded-xl text-sm ${msg.role === 'user' ? 'bg-brand-gold/20 text-white self-end rounded-br-sm border border-brand-gold/30' : 'bg-white/10 text-slate-200 self-start rounded-bl-sm border border-white/5'}">
-            ${msg.text}
-          </div>
-        `).join('');
+        let html = this.chatHistory.map(msg => {
+          if (msg.role === 'user') {
+            return `
+              <div class="max-w-[85%] self-end">
+                <div class="bg-gradient-to-br from-brand-gold to-brand-light text-brand-dark p-3.5 rounded-2xl rounded-br-sm shadow-md font-medium text-[13px] leading-relaxed">
+                  ${msg.text}
+                </div>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="max-w-[90%] self-start flex gap-2 items-end">
+                <div class="w-6 h-6 rounded-full bg-brand-card flex items-center justify-center border border-brand-border shrink-0">
+                  <i class="ph-fill ph-robot text-brand-gold text-xs"></i>
+                </div>
+                <div class="bg-brand-card border border-brand-border text-slate-200 p-3.5 rounded-2xl rounded-bl-sm shadow-md text-[13px] leading-relaxed">
+                  ${msg.text}
+                </div>
+              </div>
+            `;
+          }
+        }).join('');
         
         if (this.isBotTyping) {
           html += `
-            <div class="bg-white/10 text-slate-200 self-start rounded-bl-sm border border-white/5 max-w-[85%] p-3 rounded-xl text-sm flex items-center gap-2 animate-fade-in">
-              <i class="ph-bold ph-spinner animate-spin-slow text-brand-gold text-lg"></i> Escribiendo...
+            <div class="max-w-[90%] self-start flex gap-2 items-end animate-fade-in">
+              <div class="w-6 h-6 rounded-full bg-brand-card flex items-center justify-center border border-brand-border shrink-0">
+                <i class="ph-fill ph-robot text-brand-gold text-xs"></i>
+              </div>
+              <div class="bg-brand-card border border-brand-border text-brand-gold p-3 rounded-2xl rounded-bl-sm shadow-md text-[13px] flex items-center gap-2 font-bold">
+                <i class="ph-bold ph-spinner animate-spin-slow text-lg"></i> Procesando...
+              </div>
             </div>
           `;
         }
         cont.innerHTML = html;
-        // Auto-scroll al final del chat
         cont.scrollTop = cont.scrollHeight;
       },
 
@@ -1076,7 +1334,6 @@
         const text = input.value;
         if (!text.trim()) return;
 
-        // Añadir mensaje del usuario
         this.chatHistory.push({ role: 'user', text });
         input.value = '';
         this.isBotTyping = true;
@@ -1087,60 +1344,39 @@
         input.disabled = true;
 
         try {
-          // PEGA TU CLAVE DE GOOGLE AI STUDIO AQUÍ ADENTRO:
-          const apiKey = ""; 
+          // ⚠️ ATENCIÓN: Para que funcione en este entorno de vista previa, apiKey debe estar vacía.
+          // Cuando subas este código a GitHub Pages, pon tu clave aquí:
+          // const apiKey = "AIzaSyC38_npHd2V55MTvg2Y8o64fIv9H3JVCrA"; 
+          const apiKey = "";
+
           const systemInstruction = `
-            Eres el asistente virtual de IA de 'Nodo Fiscal', un despacho contable digital y academia, fundado por estudiantes de la UJAT (Fernando, Emilio, Critopher y Haziel). 
-            Servicios: Contabilidad digital, SAT, NIIF, Python.
-            Planes Físicas (MAS IVA): Sin nómina ($998), Nómina 1-5 emp ($1,798), Nómina 6-15 emp ($2,998).
-            Planes Empresas (MAS IVA): Pyme ($4,998), Corp. Avanzado ($9,000), Consultoría (Medida).
-            Academia: Cursos gratis (SAT, NIIF) y Premium (Python $2,400 + IVA, Máster NIIF $5,000 + IVA).
-            Regla: Responde conciso (max 3 líneas). Aclara que precios son "+ IVA". Invita siempre a agendar cita.
+            Eres el asistente virtual de Inteligencia Artificial de 'Nodo Fiscal', un despacho contable 100% digital de alto rendimiento y plataforma educativa.
+            Fue fundado por brillantes estudiantes de la UJAT (Universidad Juárez Autónoma de Tabasco, DACEA): Fernando Álvarez, Emilio Hernandez, Critopher Juarez y Haziel Oliva. Tu propósito es responder dudas, generar confianza y agendar ventas.
+            Servicios clave: Contabilidad digital sin papel, Trámites SAT, Normas Internacionales NIIF, y Automatización de bases de datos con Python.
+            Planes Contables Mensuales (Precios son MAS IVA):
+            - Personas Físicas: 1. Básico sin nómina ($998), 2. Emprendedor nómina 1-5 ($1,798), 3. Consolidado nómina 6-15 ($2,998).
+            - Empresas (Régimen General): 1. Corporativo Base ($4,998), 2. Avanzado con NIIF y Python ($9,000). Consultoría a la medida también disponible.
+            Academia: Cursos desde básicos gratuitos (SAT, NIIF) hasta Premium como Python ($2,400 + IVA) y Máster NIIF ($5,000 + IVA).
+            Regla Estricta: Responde de manera profesional, corporativa y amable. NO des respuestas largas (máximo 3 oraciones). Menciona el nombre de algún socio fundador si la ocasión lo amerita para generar confianza local. Invita siempre a usar el botón de "Solicitar Diagnóstico" o "Comprar curso".
           `;
 
-          if(apiKey) {
-             const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text }] }],
-                systemInstruction: { parts: [{ text: systemInstruction }] }
-              })
-            });
-            const botResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "Tuve un pequeño problema técnico, ¿puedes repetirme?";
-            this.chatHistory.push({ role: 'bot', text: botResponse });
-          } else {
-             // Simulador de respuestas (Fallback si no hay API key)
-             await new Promise(r => setTimeout(r, 1200)); 
-             let botResponse = "";
-             const t = text.toLowerCase();
-             
-             if(t.includes("precio") || t.includes("cuesta") || t.includes("cobran") || t.includes("plan")) {
-               botResponse = "Manejamos diferentes planes según tu tamaño. Las personas físicas inician en $998 MXN + IVA y las Empresas en $4,998 MXN + IVA. ¿Te gustaría agendar una llamada de diagnóstico?";
-             } else if(t.includes("curso") || t.includes("python") || t.includes("niif") || t.includes("academia")) {
-               botResponse = "¡Sí! Nuestra academia tiene 8 cursos en total. Desde básicos gratuitos del SAT hasta avanzados como Python ($2,400 + IVA). Te invito a ver nuestro catálogo completo haciendo clic en 'Explorar catálogo'.";
-             } else if(t.includes("hola") || t.includes("buen") || t.includes("que tal")) {
-               botResponse = "¡Hola nuevamente! 👋 Estoy aquí para ayudarte. Puedes preguntarme sobre los servicios de contabilidad, costos de nóminas, o nuestra academia tecnológica.";
-             } else if(t.includes("nomina") || t.includes("empleado") || t.includes("trabajador")) {
-               botResponse = "Nuestros planes pueden incluir maquila de nómina e IMSS. Por ejemplo, el plan 'Emprendedor' cubre de 1 a 5 empleados. ¿Cuántos trabajadores tienes actualmente?";
-             } else if(t.includes("sat") || t.includes("impuesto") || t.includes("declaracion")) {
-               botResponse = "Somos expertos en el SAT. Nos encargamos de tu contabilidad, declaraciones mensuales y anuales, y buzón tributario para que evites multas al 100%.";
-             } else if(t.includes("contacto") || t.includes("asesor") || t.includes("hablar") || t.includes("numero")) {
-               botResponse = "Para una atención personalizada, ve a la sección de 'Suscripciones' y dale clic a 'Solicitar Diagnóstico'. Así uno de nuestros socios te contactará directamente.";
-             } else {
-               const fallbacks = [
-                 "Entiendo perfectamente. Al ser un despacho 100% digital, tenemos la tecnología para resolver ese tipo de situaciones de manera ágil.",
-                 "Esa es una excelente pregunta. Las regulaciones fiscales y corporativas requieren exactitud, por lo que te sugiero solicitar un diagnóstico en nuestra sección de Planes.",
-                 "Comprendo. Nuestro enfoque en automatización y NIIF está diseñado justo para optimizar ese tipo de requerimientos."
-               ];
-               botResponse = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-             }
-             this.chatHistory.push({ role: 'bot', text: botResponse });
-          }
+          const modelName = apiKey ? "gemini-1.5-flash" : "gemini-2.5-flash-preview-09-2025";
+
+          const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text }] }],
+              systemInstruction: { parts: [{ text: systemInstruction }] }
+            })
+          });
+
+          const botResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "Tuve un pequeño problema técnico procesando la respuesta. ¿Me lo repites?";
+          this.chatHistory.push({ role: 'bot', text: botResponse });
           
         } catch (error) {
           console.error(error);
-          this.chatHistory.push({ role: 'bot', text: "Lo siento, mi conexión falló en este momento. Por favor, deja tus datos en nuestra sección de planes." });
+          this.chatHistory.push({ role: 'bot', text: "Mi sistema está actualizándose en este instante. Por favor, utiliza el formulario de contacto para que uno de nuestros socios te atienda personalmente." });
         } finally {
           this.isBotTyping = false;
           submitBtn.disabled = false;
@@ -1151,7 +1387,7 @@
       }
     };
 
-    // Inicializar al cargar el DOM
+    // Inicializar al cargar
     document.addEventListener('DOMContentLoaded', () => app.init());
   </script>
 </body>
