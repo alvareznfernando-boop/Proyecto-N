@@ -30,6 +30,7 @@
             'fade-in': 'fadeIn 0.3s ease-out forwards',
             'slide-up': 'slideUp 0.4s ease-out forwards',
             'spin-slow': 'spin 3s linear infinite',
+            'scroll': 'scroll 35s linear infinite' /* Animación para el carrusel */
           },
           keyframes: {
             fadeIn: {
@@ -39,6 +40,10 @@
             slideUp: {
               '0%': { opacity: '0', transform: 'translateY(20px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            scroll: {
+              '0%': { transform: 'translateX(0)' },
+              '100%': { transform: 'translateX(-100%)' }
             }
           }
         }
@@ -255,29 +260,28 @@
       </div>
     </section>
 
-    <!-- TRUST BADGES -->
-    <section class="py-16 bg-brand-dark border-t border-white/5 relative z-10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h3 class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-10">
+    <!-- TRUST BADGES (MARQUEE INFINITO) -->
+    <section class="py-16 bg-brand-dark border-t border-white/5 relative z-10 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-10">
+        <h3 class="text-slate-400 text-sm font-bold uppercase tracking-widest">
           Gracias por su confianza
         </h3>
-        <div class="flex flex-wrap justify-center items-center gap-10 md:gap-20 opacity-60 hover:opacity-100 transition-opacity duration-500">
-          <div class="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
-            <i class="ph-fill ph-hexagon text-3xl text-brand-gold"></i>
-            <span class="text-xl font-bold text-slate-300 group-hover:text-white transition-colors">TechGlobal</span>
-          </div>
-          <div class="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
-            <i class="ph-fill ph-globe text-3xl text-blue-500"></i>
-            <span class="text-xl font-black tracking-tighter text-slate-300 group-hover:text-white transition-colors">LATAM LOGISTICS</span>
-          </div>
-          <div class="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
-            <i class="ph-fill ph-buildings text-3xl text-emerald-500"></i>
-            <span class="text-xl font-serif font-bold text-slate-300 group-hover:text-white transition-colors">Constructora Sureste</span>
-          </div>
-          <div class="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105">
-            <i class="ph-fill ph-briefcase text-3xl text-rose-500"></i>
-            <span class="text-xl font-medium tracking-widest text-slate-300 group-hover:text-white transition-colors">AGRO TABASCO</span>
-          </div>
+      </div>
+      
+      <!-- Contenedor del Marquee -->
+      <div class="relative flex overflow-hidden group">
+        <!-- Gradientes laterales para difuminar entrada y salida -->
+        <div class="absolute top-0 bottom-0 left-0 w-16 md:w-32 bg-gradient-to-r from-brand-dark to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute top-0 bottom-0 right-0 w-16 md:w-32 bg-gradient-to-l from-brand-dark to-transparent z-10 pointer-events-none"></div>
+        
+        <!-- Carril de logos 1 -->
+        <div id="marquee-track-1" class="flex animate-scroll whitespace-nowrap gap-16 items-center pr-16 opacity-60 group-hover:opacity-100 transition-opacity duration-500 w-max flex-shrink-0">
+          <!-- JS Inject: Companies -->
+        </div>
+        
+        <!-- Carril de logos 2 (Duplicado exacto para crear el loop sin fin) -->
+        <div id="marquee-track-2" class="flex animate-scroll whitespace-nowrap gap-16 items-center pr-16 opacity-60 group-hover:opacity-100 transition-opacity duration-500 w-max flex-shrink-0" aria-hidden="true">
+          <!-- JS Inject: Companies -->
         </div>
       </div>
     </section>
@@ -595,6 +599,21 @@
        JAVASCRIPT (LÓGICA DE LA APLICACIÓN)
        ========================================================================= -->
   <script>
+    // ── Función Helper para llamadas API con Reintentos ───────────────────────
+    const fetchWithRetry = async (url, options, retries = 5) => {
+      const delays = [1000, 2000, 4000, 8000, 16000];
+      for (let i = 0; i < retries; i++) {
+        try {
+          const response = await fetch(url, options);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          return await response.json();
+        } catch (error) {
+          if (i === retries - 1) throw error;
+          await new Promise(res => setTimeout(res, delays[i]));
+        }
+      }
+    };
+
     // ── BASE DE DATOS MOCK ───────────────────────────────────────────────────
     const DB = {
       users: [
@@ -637,6 +656,18 @@
         { name: "Corporativo Base (Pyme)", ideal: "Empresas Régimen General con nómina estándar.", price: "$4,998", popular: true, features: ["Contabilidad Electrónica (DIOT, XML)", "Gestión de Nómina (Hasta 20 empleados)", "Movimientos IMSS, INFONAVIT, SUA", "Conciliaciones bancarias automatizadas", "Junta de resultados y estados financieros"] },
         { name: "Corporativo Avanzado", ideal: "Alta transaccionalidad, NIIF y análisis financiero profundo.", price: "$9,000", popular: false, features: ["Nómina corporativa (>20 empleados)", "Análisis Financiero y de Rentabilidad", "Estructuración de Estados bajo NIIF", "Automatización de procesos con Python", "Auditoría preventiva SAT"] },
         { name: "Consultoría Especializada", ideal: "Despachos aliados o empresas con problemas técnicos puntuales.", price: "A medida", popular: false, features: ["Troubleshooting en CONTPAQi / SQL", "Regularización de ejercicios pasados", "Desarrollo de scripts contables Python", "Implementación NIIF corporativa", "Defensa fiscal y requerimientos"] }
+      ],
+      companies: [
+        { name: "TechGlobal", icon: "ph-hexagon", color: "text-brand-gold" },
+        { name: "LATAM LOGISTICS", icon: "ph-globe", color: "text-blue-500" },
+        { name: "Constructora Sureste", icon: "ph-buildings", color: "text-emerald-500" },
+        { name: "AGRO TABASCO", icon: "ph-briefcase", color: "text-rose-500" },
+        { name: "Inmobiliaria Zafiro", icon: "ph-house", color: "text-cyan-400" },
+        { name: "Grupo Textilero", icon: "ph-t-shirt", color: "text-fuchsia-500" },
+        { name: "Finanzas Capital", icon: "ph-bank", color: "text-amber-500" },
+        { name: "Salud & Bienestar", icon: "ph-heartbeat", color: "text-red-500" },
+        { name: "Energías Renovables", icon: "ph-lightning", color: "text-yellow-400" },
+        { name: "EduTech", icon: "ph-graduation-cap", color: "text-indigo-400" }
       ]
     };
 
@@ -647,11 +678,13 @@
       chatHistory: [
         { role: "bot", text: "¡Hola! Soy la Inteligencia Artificial de Nodo Fiscal 🤖. Fui entrenada para responder tus dudas sobre contabilidad, nuestros planes o la academia. ¿En qué te puedo ayudar hoy?" }
       ],
+      isBotTyping: false,
       
       init() {
         this.renderPlanes();
         this.renderFeaturedCourses();
         this.renderCatalogCourses();
+        this.renderCompaniesMarquee();
         this.renderChatHistory();
       },
 
@@ -837,6 +870,20 @@
         document.getElementById('dash-content-documentos').innerHTML = html;
       },
 
+      // --- EMPRESAS (MARQUEE) RENDERING ---
+      renderCompaniesMarquee() {
+        const html = DB.companies.map(comp => `
+          <div class="flex items-center gap-2 group cursor-pointer transition-transform hover:scale-105 mx-4">
+            <i class="ph-fill ${comp.icon} text-4xl sm:text-5xl ${comp.color}"></i>
+            <span class="text-xl sm:text-2xl font-bold text-slate-300 group-hover:text-white transition-colors">${comp.name}</span>
+          </div>
+        `).join('');
+        
+        // Inyectamos el mismo contenido en ambas pistas para el efecto infinito
+        document.getElementById('marquee-track-1').innerHTML = html;
+        document.getElementById('marquee-track-2').innerHTML = html;
+      },
+
       // --- PLANES Y CURSOS RENDERING ---
       setPricingCategory(cat) {
         this.pricingCategory = cat;
@@ -980,7 +1027,7 @@
         this.closeQuoteModal();
       },
 
-      // --- CHATBOT ---
+      // --- CHATBOT IA ---
       toggleChat() {
         const win = document.getElementById('chat-window');
         const icon = document.getElementById('chat-toggle-icon');
@@ -990,6 +1037,11 @@
           icon.className = "ph-bold ph-x text-3xl";
           btn.classList.replace('bg-gradient-to-r', 'bg-white/10');
           btn.classList.replace('text-brand-dark', 'text-white');
+          // Forzamos el scroll hacia abajo al abrir
+          setTimeout(() => {
+            const cont = document.getElementById('chat-history');
+            cont.scrollTop = cont.scrollHeight;
+          }, 50);
         } else {
           win.classList.add('hidden');
           icon.className = "ph-fill ph-chat-teardrop-text text-3xl";
@@ -1008,12 +1060,13 @@
         
         if (this.isBotTyping) {
           html += `
-            <div class="bg-white/10 text-slate-200 self-start rounded-bl-sm border border-white/5 max-w-[85%] p-3 rounded-xl text-sm flex items-center gap-2">
+            <div class="bg-white/10 text-slate-200 self-start rounded-bl-sm border border-white/5 max-w-[85%] p-3 rounded-xl text-sm flex items-center gap-2 animate-fade-in">
               <i class="ph-bold ph-spinner animate-spin-slow text-brand-gold text-lg"></i> Escribiendo...
             </div>
           `;
         }
         cont.innerHTML = html;
+        // Auto-scroll al final del chat
         cont.scrollTop = cont.scrollHeight;
       },
 
@@ -1023,6 +1076,7 @@
         const text = input.value;
         if (!text.trim()) return;
 
+        // Añadir mensaje del usuario
         this.chatHistory.push({ role: 'user', text });
         input.value = '';
         this.isBotTyping = true;
@@ -1033,17 +1087,17 @@
         input.disabled = true;
 
         try {
-          const apiKey = ""; // API Key de Gemini
+          // PEGA TU CLAVE DE GOOGLE AI STUDIO AQUÍ ADENTRO:
+          const apiKey = ""; 
           const systemInstruction = `
             Eres el asistente virtual de IA de 'Nodo Fiscal', un despacho contable digital y academia, fundado por estudiantes de la UJAT (Fernando, Emilio, Critopher y Haziel). 
             Servicios: Contabilidad digital, SAT, NIIF, Python.
             Planes Físicas (MAS IVA): Sin nómina ($998), Nómina 1-5 emp ($1,798), Nómina 6-15 emp ($2,998).
             Planes Empresas (MAS IVA): Pyme ($4,998), Corp. Avanzado ($9,000), Consultoría (Medida).
             Academia: Cursos gratis (SAT, NIIF) y Premium (Python $2,400 + IVA, Máster NIIF $5,000 + IVA).
-            Regla: Responde conciso (max 3 líneas). Aclara que precios son "+ IVA".
+            Regla: Responde conciso (max 3 líneas). Aclara que precios son "+ IVA". Invita siempre a agendar cita.
           `;
 
-          // Si hay API KEY configurada, hace la llamada real. Si no, simula una respuesta inteligente.
           if(apiKey) {
              const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
               method: 'POST',
@@ -1056,18 +1110,37 @@
             const botResponse = response.candidates?.[0]?.content?.parts?.[0]?.text || "Tuve un pequeño problema técnico, ¿puedes repetirme?";
             this.chatHistory.push({ role: 'bot', text: botResponse });
           } else {
-            // Simulador fallback si no hay API Key puesta
-            await new Promise(r => setTimeout(r, 1000));
-            let botResponse = "Interesante pregunta. Podemos adaptar nuestros servicios a ti. Déjame tus datos en la sección de planes.";
-            const t = text.toLowerCase();
-            if(t.includes("precio") || t.includes("cuesta") || t.includes("empresa")) botResponse = "Nuestros planes empiezan en $998 MXN + IVA para físicas y $4,998 MXN + IVA para empresas. ¡Contáctanos en la sección de planes!";
-            else if(t.includes("curso") || t.includes("python") || t.includes("niif")) botResponse = "Tenemos cursos gratis y Premium, como Python para Contadores ($2,400 + IVA). Revisa nuestro catálogo.";
-            
-            this.chatHistory.push({ role: 'bot', text: botResponse });
+             // Simulador de respuestas (Fallback si no hay API key)
+             await new Promise(r => setTimeout(r, 1200)); 
+             let botResponse = "";
+             const t = text.toLowerCase();
+             
+             if(t.includes("precio") || t.includes("cuesta") || t.includes("cobran") || t.includes("plan")) {
+               botResponse = "Manejamos diferentes planes según tu tamaño. Las personas físicas inician en $998 MXN + IVA y las Empresas en $4,998 MXN + IVA. ¿Te gustaría agendar una llamada de diagnóstico?";
+             } else if(t.includes("curso") || t.includes("python") || t.includes("niif") || t.includes("academia")) {
+               botResponse = "¡Sí! Nuestra academia tiene 8 cursos en total. Desde básicos gratuitos del SAT hasta avanzados como Python ($2,400 + IVA). Te invito a ver nuestro catálogo completo haciendo clic en 'Explorar catálogo'.";
+             } else if(t.includes("hola") || t.includes("buen") || t.includes("que tal")) {
+               botResponse = "¡Hola nuevamente! 👋 Estoy aquí para ayudarte. Puedes preguntarme sobre los servicios de contabilidad, costos de nóminas, o nuestra academia tecnológica.";
+             } else if(t.includes("nomina") || t.includes("empleado") || t.includes("trabajador")) {
+               botResponse = "Nuestros planes pueden incluir maquila de nómina e IMSS. Por ejemplo, el plan 'Emprendedor' cubre de 1 a 5 empleados. ¿Cuántos trabajadores tienes actualmente?";
+             } else if(t.includes("sat") || t.includes("impuesto") || t.includes("declaracion")) {
+               botResponse = "Somos expertos en el SAT. Nos encargamos de tu contabilidad, declaraciones mensuales y anuales, y buzón tributario para que evites multas al 100%.";
+             } else if(t.includes("contacto") || t.includes("asesor") || t.includes("hablar") || t.includes("numero")) {
+               botResponse = "Para una atención personalizada, ve a la sección de 'Suscripciones' y dale clic a 'Solicitar Diagnóstico'. Así uno de nuestros socios te contactará directamente.";
+             } else {
+               const fallbacks = [
+                 "Entiendo perfectamente. Al ser un despacho 100% digital, tenemos la tecnología para resolver ese tipo de situaciones de manera ágil.",
+                 "Esa es una excelente pregunta. Las regulaciones fiscales y corporativas requieren exactitud, por lo que te sugiero solicitar un diagnóstico en nuestra sección de Planes.",
+                 "Comprendo. Nuestro enfoque en automatización y NIIF está diseñado justo para optimizar ese tipo de requerimientos."
+               ];
+               botResponse = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+             }
+             this.chatHistory.push({ role: 'bot', text: botResponse });
           }
+          
         } catch (error) {
           console.error(error);
-          this.chatHistory.push({ role: 'bot', text: "Lo siento, mi conexión falló. Deja tus datos en nuestra sección de planes y un asesor te contactará." });
+          this.chatHistory.push({ role: 'bot', text: "Lo siento, mi conexión falló en este momento. Por favor, deja tus datos en nuestra sección de planes." });
         } finally {
           this.isBotTyping = false;
           submitBtn.disabled = false;
